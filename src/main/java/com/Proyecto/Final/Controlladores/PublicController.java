@@ -27,6 +27,12 @@ public class PublicController {
         return "login.html";
     }
 
+    @PostMapping("/login")
+    public String login_request(){
+
+        return null;
+    }
+
     @GetMapping("/register")
     public String register(Model model){
         PersonaRequest user = new PersonaRequest();
