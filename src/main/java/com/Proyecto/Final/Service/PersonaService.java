@@ -44,7 +44,7 @@ public class PersonaService {
         user.setEmail(personaRequest.getEmail());
         user.setUsername(personaRequest.getUsername());
         user.setCui(personaRequest.getCui());
-        user.setActivo(true);
+        user.setEstado(true);
         user.setSaldo(0);
         user.setFecha_creacion(new Date());
 

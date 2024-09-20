@@ -11,6 +11,6 @@ import lombok.Setter;
 @Entity
 public class Apostador extends Persona {
     private double saldo;
-    private boolean activo;   
+    private boolean estado;   
      
 }

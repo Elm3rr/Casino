@@ -28,6 +28,7 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/public/login")
                 .permitAll()
+                .failureUrl("/public/login?error=true")  // Habilita el manejo de errores
                 .defaultSuccessUrl("/public/", true)
             )
             .logout(logout -> logout.permitAll()

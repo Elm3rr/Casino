@@ -1,5 +1,6 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+                xmlns:sec="http://www.thymeleaf.org">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -23,7 +24,7 @@
               </li>
             </ul>
 
-            <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="!isAuthenticated()">
               <li class="nav-item">
                 <a class="btn btn-outline-primary me-2" aria-current="page" href="/public/register">Register</a>
               </li>
