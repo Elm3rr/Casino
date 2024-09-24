@@ -26,7 +26,7 @@ public class PersonaRequest {
     private String confirmEmail;
         
     @Size(min = 13, max = 13, message = "El CUI debe de tener exactamente 13 dígitos")
-    @NotBlank(message = "XXS")
+    @NotBlank(message = "El CUI no puede estar vacío")
     private String cui;
 
     @NotBlank(message = "El nombre de usuario no puede estar vacío")
