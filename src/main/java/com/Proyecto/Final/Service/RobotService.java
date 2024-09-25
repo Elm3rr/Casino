@@ -20,7 +20,7 @@ public class RobotService {
         return robotRepository.findAll();
     }
 
-    public Robot saveRobot(RobotRequest robotRequest){
+    public Robot saveRobot(RobotRequest robotRequest, String nombre){
         Robot robot = new Robot();
         
         robot.setNombre(robotRequest.getNombre());
@@ -34,6 +34,7 @@ public class RobotService {
         robot.setJugador(robotRequest.getJugador());
         robot.setFecha_creacion(new Date());
         robot.setArmas(robotRequest.getArmas());
+        robot.setImage(nombre);
 
         return robotRepository.save(robot);
     }

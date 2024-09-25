@@ -1,5 +1,6 @@
 package com.Proyecto.Final.Controlladores;
 
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,14 +10,12 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
-import com.Proyecto.Final.DTO.RobotRequest;
 import com.Proyecto.Final.Entity.Robot;
 import com.Proyecto.Final.Service.*;
 
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
-
 
 
 @Controller
@@ -94,12 +93,6 @@ public class PublicController {
         return "home";
     }
     
-    @GetMapping("/create_robot")
-    public String create(Model model){
-        RobotRequest robotRequest = new RobotRequest();
-        model.addAttribute("robot", robotRequest);
-        return "rrobot";
-    }
 
     @GetMapping("/ranking")
     public String ranking(Model model){
