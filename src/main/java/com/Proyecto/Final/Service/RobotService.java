@@ -16,12 +16,29 @@ public class RobotService {
     @Autowired
     private RobotRepository robotRepository;
 
+    public Robot findRobot(Long id){
+        return robotRepository.findById(id).get();
+    }
     public List<Robot> robots_list(){
         return robotRepository.findAll();
     }
 
+    public RobotRequest ActualData(Robot robot){
+        RobotRequest robotRequest = new RobotRequest();
+        robotRequest.setId(robot.getId());
+        robotRequest.setNombre(robot.getNombre());
+        robotRequest.setVictorias(robot.getVictorias());
+        robotRequest.setAltura(robot.getAltura());
+        robotRequest.setPeso(robot.getPeso());
+        robotRequest.setEnvergadura(robot.getEnvergadura());
+        robotRequest.setDescalificado(robot.isDescalificado());
+        robotRequest.setJugador(robot.getJugador());
+        robotRequest.setArmas(robot.getArmas());
+        return robotRequest;
+    }
+
     public Robot saveRobot(RobotRequest robotRequest, String nombre){
-        Robot robot = new Robot();
+        Robot robot = robotRepository.findById(robotRequest.getId()).orElse(new Robot()); // Asegúrate de que RobotRequest tenga el ID
         
         robot.setNombre(robotRequest.getNombre());
         robot.setVictorias(0);

@@ -17,11 +17,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RobotRequest {
-
+    private Long id;
     @NotBlank(message = "El nombre no puede estar vacío")
     @Size(min = 2, max = 50, message = "El nombre debe tener entre 2 y 50 caracteres")
     private String nombre;
 
+    private int Victorias;
+    private int Derrotas;
+    private boolean descalificado;
     @DecimalMin(value = "0.0", inclusive = false, message = "La altura debe ser mayor a 0")
     @DecimalMax(value = "40.0", message = "La altura no puede superar los 40 cm")
     private double altura;

@@ -16,9 +16,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Proyecto.Final.DTO.RobotRequest;
+import com.Proyecto.Final.Entity.Robot;
 import com.Proyecto.Final.Service.RobotService;
 
 import jakarta.validation.Valid;
@@ -39,7 +41,7 @@ public class AdminController {
     }
 
     @PostMapping("/create_robot")
-    public String create_robot(@Valid @ModelAttribute RobotRequest robotRequest, BindingResult result){
+    public String create_robot(@Valid @ModelAttribute("robot") RobotRequest robotRequest, BindingResult result){
         if(robotRequest.getImage().isEmpty()){
             result.addError(new FieldError("robotRequest", "image", "El archivo de imagen no puede estar vacio"));
         }
@@ -53,7 +55,7 @@ public class AdminController {
         String Nombre_imagen = creado.getTime() + "-" + image.getOriginalFilename();
 
         try {
-            String direccion_subida = "public/images/";
+            String direccion_subida = "src/main/resources/static/images/";
             Path uploadPath = Paths.get(direccion_subida);
 
             if(!Files.exists(uploadPath)){
@@ -66,8 +68,61 @@ public class AdminController {
         }
 
         robotService.saveRobot(robotRequest, Nombre_imagen);
-        return "redirect:/ranking";
+        return "redirect:/public/ranking";
     }
 
+    @GetMapping("/edit_robot")
+    public String edit_robot(Model model, @RequestParam long id){
+        try{
+            Robot robot = robotService.findRobot(id);
+            model.addAttribute("robot", robot);
+            RobotRequest robotRequest = robotService.ActualData(robot);
+            model.addAttribute("request", robotRequest);
 
+        }catch(Exception ex){
+            System.out.println("Exception: " + ex.getMessage());
+            return "redirect:/public/ranking";
+        }
+        
+        return "edit_robot";
+    }
+
+    @PostMapping("/edit_robot")
+    public String edit_robot(Model model, @RequestParam long id, @Valid @ModelAttribute("request") RobotRequest robotRequest, BindingResult result){
+        try{
+            Robot robot = robotService.findRobot(id);
+            model.addAttribute("robot", robot);
+
+            if(result.hasErrors()){
+                return "edit_robot";
+            }
+            String Nombre_imagen;
+
+            if(!robotRequest.getImage().isEmpty()){
+                String direccion_subida = "src/main/resources/static/images/";
+                Path oldPath = Paths.get(direccion_subida + robot.getImage());
+                try{
+                    Files.delete(oldPath);
+                }catch(Exception ex){
+                    System.out.println("Exception: " + ex.getMessage());
+                }
+                        
+                MultipartFile image = robotRequest.getImage();
+                Date creado = new Date();
+                Nombre_imagen = creado.getTime() + "-" + image.getOriginalFilename();
+                try(InputStream inputStream = image.getInputStream()){
+                    Files.copy(inputStream, Paths.get(direccion_subida, Nombre_imagen), StandardCopyOption.REPLACE_EXISTING);                
+                }
+            }else{
+                Nombre_imagen = robot.getImage();
+            }
+
+            robotService.saveRobot(robotRequest, Nombre_imagen);
+
+
+        }catch(Exception ex){
+            System.out.println("Exception: " + ex.getMessage());
+        }
+        return "redirect:/public/ranking";
+    }
 }

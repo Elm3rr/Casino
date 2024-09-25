@@ -9,7 +9,7 @@
   <body>
     <div class="container">
         <h1 class="text-center my-4">Top 10 Robots</h1>
-        <a class = "btn btn-primary" href="/admin/create_robot">Crear robot</a>
+        <a class = "btn btn-primary" href="/admin/create_robot" sec:authorize="hasRole('ADMIN')">Crear robot</a>
         <table class="table">
         <thead>
             <tr>
@@ -20,7 +20,7 @@
                 <th>ARMAS</th>
                 <th>FECHA DE CREACION</th>
                 <th>FOTO</th>
-                <th>OPCIONES</th>
+                <th sec:authorize="hasRole('ADMIN')">OPCIONES</th>
             </tr>
         </thead>
         <tbody>
@@ -32,12 +32,11 @@
                 <td th:text="${robot.armas}"></td>
                 <td th:text="${robot.fecha_creacion.toString().substring(0,10)}"></td>
                 <td>
-                    <img th:arc="@{'/images/' +{robot.image}}"
-                        alt="..." width="100">
+                    <img th:src="@{'/images/' + ${robot.image}}" alt="Robot Image" width="100">
                 </td>
-                <td style="white-space:nowrap">
+                <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN')">
                     <a class="btn btn-primary btn-sm"
-                        th:href="@{/public/edit_robot(id=${robot.id})}">Editar</a>
+                        th:href="@{/admin/edit_robot(id=${robot.id})}">Editar</a>
                     <a class="btn btn-danger btn-sm"
                         th:href="@{/public/eliminar(id=${robot.id})}"
                         onclick="return confirm('Are you sure?')">Eliminar</a>

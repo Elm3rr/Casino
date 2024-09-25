@@ -7,7 +7,6 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.Proyecto.Final.Entity.Administrador;
 import com.Proyecto.Final.Entity.Persona;
 
 import lombok.AllArgsConstructor;
@@ -19,9 +18,7 @@ public class CustomUserDetails implements UserDetails {
     
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = persona instanceof Administrador ? "ROLE_ADMIN" : "ROLE_USER";
-        return List.of(new SimpleGrantedAuthority(role));
-    
+        return List.of(new SimpleGrantedAuthority(persona.getRole()));
     }
 
     @Override
