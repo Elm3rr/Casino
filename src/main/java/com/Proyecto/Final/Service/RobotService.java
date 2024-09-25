@@ -1,5 +1,8 @@
 package com.Proyecto.Final.Service;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,11 +16,26 @@ public class RobotService {
     @Autowired
     private RobotRepository robotRepository;
 
-    public Robot saveRobot(RobotRequest robotRequest){
-        Robot object = new Robot();
-        
+    public List<Robot> robots_list(){
+        return robotRepository.findAll();
+    }
 
-        return robotRepository.save(object);
+    public Robot saveRobot(RobotRequest robotRequest){
+        Robot robot = new Robot();
+        
+        robot.setNombre(robotRequest.getNombre());
+        robot.setVictorias(0);
+        robot.setDerrotas(0);
+        robot.setAltura(robotRequest.getAltura());
+        robot.setPeso(robotRequest.getPeso());
+        robot.setEnvergadura(robotRequest.getEnvergadura());
+        robot.setN_armas(0);
+        robot.setDescalificado(false);
+        robot.setJugador(robotRequest.getJugador());
+        robot.setFecha_creacion(new Date());
+        robot.setArmas(robotRequest.getArmas());
+
+        return robotRepository.save(robot);
     }
 
 

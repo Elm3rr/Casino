@@ -3,6 +3,7 @@ package com.Proyecto.Final.Entity;
 import java.util.Date;
 import java.util.List;
 
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -33,6 +34,10 @@ public class Robot {
     private boolean descalificado;
     private String jugador;
     private Date fecha_creacion;
+    private String image;
+
+    @ElementCollection
+    private List<String> armas;
 
     @OneToMany(mappedBy = "robot1")
     private List<Combate> player1;

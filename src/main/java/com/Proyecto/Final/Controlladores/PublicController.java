@@ -1,5 +1,7 @@
 package com.Proyecto.Final.Controlladores;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -7,7 +9,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
-import com.Proyecto.Final.Service.PersonaService;
+import com.Proyecto.Final.DTO.RobotRequest;
+import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Service.*;
 
 import jakarta.validation.Valid;
 
@@ -22,15 +26,13 @@ public class PublicController {
     @Autowired
     private PersonaService personaService;
 
+    @Autowired
+    private RobotService robotService;
+
+
     @GetMapping("/login")
     public String login() {
         return "login.html";
-    }
-
-    @PostMapping("/login")
-    public String login_request(){
-
-        return null;
     }
 
     @GetMapping("/register")
@@ -92,7 +94,19 @@ public class PublicController {
         return "home";
     }
     
+    @GetMapping("/create_robot")
+    public String create(Model model){
+        RobotRequest robotRequest = new RobotRequest();
+        model.addAttribute("robot", robotRequest);
+        return "rrobot";
+    }
 
+    @GetMapping("/ranking")
+    public String ranking(Model model){
+        List<Robot> robots = robotService.robots_list();
+        model.addAttribute("robots", robots);
+        return "ranking";
+    }
 
 
     
