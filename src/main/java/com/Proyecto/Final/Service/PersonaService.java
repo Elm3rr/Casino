@@ -54,4 +54,8 @@ public class PersonaService {
 
         return personaRepository.save(user);
     }
+
+    public Apostador findByUsername(String username) {
+        return personaRepository.findApostadorByUsername(username).orElse(null);
+    }
 }

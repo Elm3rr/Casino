@@ -32,7 +32,6 @@ public class Combate {
 
     private String resultado;
 
-    //Holaaaaaaaaaa
     @OneToMany(mappedBy="combate")
     private List<Apuesta> apuestas;
 

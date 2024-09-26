@@ -1,6 +1,7 @@
 package com.Proyecto.Final.Controlladores;
 
 
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
+import com.Proyecto.Final.Entity.Apostador;
 import com.Proyecto.Final.Entity.Robot;
 import com.Proyecto.Final.Service.*;
 
@@ -89,7 +91,20 @@ public class PublicController {
 
 
     @GetMapping({"","/"})
-    public String home() {
+    public String home(Model model, Principal principal) {
+        if(principal !=null){
+            String username = principal.getName();
+            Apostador apostador = personaService.findByUsername(username);
+            if(apostador !=null){
+                double saldo = apostador.getSaldo();
+                model.addAttribute("saldo", saldo);
+                model.addAttribute("username", username);
+            }else{
+                model.addAttribute("saldo", "N/A");
+            }
+        }else{
+            model.addAttribute("saldo", "N/A");
+        }
         return "home";
     }
     
@@ -99,6 +114,11 @@ public class PublicController {
         List<Robot> robots = robotService.robots_list_habilitados();
         model.addAttribute("robots", robots);
         return "ranking";
+    }
+
+    @GetMapping("/terms-QA")
+    public String information(){
+        return "information";
     }
 
 

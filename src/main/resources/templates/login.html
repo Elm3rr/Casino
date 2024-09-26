@@ -36,7 +36,6 @@
             <div class="login-container">
                 <h2 class="text-center login-title">Iniciar Sesión</h2>
 
-                <!-- Formulario de login -->
                 <form th:action="@{/public/login}" method="post">
                     <div class="form-group">
                         <label for="username">Usuario:</label>
@@ -50,17 +49,15 @@
                         <button type="submit" class="btn btn-primary btn-block">Iniciar Sesión</button>
                     </div>
 
-                    <!-- Si hay error de login -->
                     <div th:if="${param.error}" class="alert alert-danger">
                         Usuario o contraseña incorrectos.
                     </div>
 
-                    <!-- Si el usuario ha cerrado sesión -->
                     <div th:if="${param.logout}" class="alert alert-success">
                         Has cerrado sesión exitosamente.
                     </div>
                     <div>
-                        <a href="register.html" class="btn btn-link">No tienes Cuenta? Regístrate</a>
+                        <a href="/public/register" class="btn btn-link">No tienes Cuenta? Regístrate</a>
                     </div>
                 </form>
             </div>
