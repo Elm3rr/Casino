@@ -6,6 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -125,4 +126,26 @@ public class AdminController {
         }
         return "redirect:/public/ranking";
     }
+
+
+    @GetMapping("/delete_robot")
+    public String deleteProduct(@RequestParam long id){
+        try{
+            robotService.ocultar_robot(id);
+            return "redirect:/public/ranking";
+
+        }catch (Exception ex){
+            System.out.println("Exception: " + ex.getMessage()); 
+        }
+        return "redirect:/public/ranking";
+    }
+
+    @GetMapping("/buscar")
+    public String buscar_robot(@RequestParam("query") String query, Model model){
+        List<Robot> robots = robotService.searchByname(query);
+        model.addAttribute("robots", robots);
+        return "ranking"; 
+    }
+    
+
 }

@@ -8,8 +8,13 @@
   </head>
   <body>
     <div class="container">
-        <h1 class="text-center my-4">Top 10 Robots</h1>
+        <h1 class="text-center my-4" sec:authorize="hasRole('ADMIN')">Administración de Robots</h1>
+        <h1 class="text-center my-4" sec:authorize="!hasRole('ADMIN')">Top 10 Robots</h1>
         <a class = "btn btn-primary" href="/admin/create_robot" sec:authorize="hasRole('ADMIN')">Crear robot</a>
+        <form class="d-flex mb-4" sec:authorize="hasRole('ADMIN')" action="/admin/buscar" method="get">
+            <input class="form-control me-2" type="search" name="query" placeholder="Buscar robot por nombre" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Buscar</button>
+        </form>
         <table class="table">
         <thead>
             <tr>
@@ -38,7 +43,7 @@
                     <a class="btn btn-primary btn-sm"
                         th:href="@{/admin/edit_robot(id=${robot.id})}">Editar</a>
                     <a class="btn btn-danger btn-sm"
-                        th:href="@{/public/eliminar(id=${robot.id})}"
+                        th:href="@{/admin/delete_robot(id=${robot.id})}"
                         onclick="return confirm('Are you sure?')">Eliminar</a>
 
                 </td>

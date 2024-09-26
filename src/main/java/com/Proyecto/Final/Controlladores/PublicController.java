@@ -96,7 +96,7 @@ public class PublicController {
 
     @GetMapping("/ranking")
     public String ranking(Model model){
-        List<Robot> robots = robotService.robots_list();
+        List<Robot> robots = robotService.robots_list_habilitados();
         model.addAttribute("robots", robots);
         return "ranking";
     }
