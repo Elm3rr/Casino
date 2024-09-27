@@ -1,5 +1,6 @@
 package com.Proyecto.Final.Entity;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Entity;
@@ -32,7 +33,12 @@ public class Combate {
 
     private String resultado;
 
+    private String estado;
+
+    private LocalDateTime fechacombate;
+
+    private LocalDateTime fecha_creacion;
+
     @OneToMany(mappedBy="combate")
     private List<Apuesta> apuestas;
-
 }

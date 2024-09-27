@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: page_head(pageTitle='My Gambling Site')}"></head>
+  <body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
+    <div class="container">
+        <h1 class="text-center my-4">SELECCIONADOR DE COMBATIENTES</h1>
+        <form th:action="@{/admin/combates}" method="post">
+        <div class="form-group">
+            <label for="fechacombate">Fecha y Hora del Combate:</label>
+            <input type="datetime-local" id="fechacombate" name="fechacombate" required />
+        </div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>COODIGO</th>
+                    <th>NOMBRE</th>
+                    <th>VICTORIAS</th>
+                    <th>DERROTAS</th>
+                    <th>CONTROLADOR</th>
+                    <th>ARMAS</th>
+                    <th>FOTO</th>
+                    <th>SELECCIONAR</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="robot : ${robots}">
+                    <td th:text="${robot.id}"></td>
+                    <td th:text="${robot.nombre}"></td>
+                    <td th:text="${robot.victorias}"></td>
+                    <td th:text="${robot.derrotas}"></td>
+                    <td th:text="${robot.jugador}"></td>
+                    <td th:text="${robot.armas}"></td>
+                    <td>
+                        <img th:src="@{'/images/' + ${robot.image}}" alt="Robot Image" width="100">
+                    </td>
+                    <td>
+                        <input type="checkbox" name="selectedRobots" th:value="${robot.id}"/>
+                    </td>
+                </tr>
+            </tbody>
+            </table>
+            <button type="submit" class="btn btn-primary">Seleccionar Robots</button>
+        </form>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+    <footer th:replace="~{layout :: page_footer}"></footer>
+  </body>
+</html>

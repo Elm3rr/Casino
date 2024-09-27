@@ -1,11 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+<!doctype html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: page_head(pageTitle='Términos y FAQ - Sitio de Apuestas de Combates de Robots')}"></head>
+  <body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
     
-</body>
+    <div class="container my-5">
+      <h1 class="text-center mb-4">Términos y Condiciones</h1>
+      <p>Bienvenido a nuestro Sitio de Apuestas de Combates de Robots, una plataforma desarrollada por estudiantes con fines educativos en la universidad. Antes de utilizar este sitio, asegúrate de entender los siguientes términos y condiciones:</p>
+      
+      <h3>1. Elegibilidad para Participar</h3>
+      <p>Todos los usuarios deben tener al menos 18 años de edad para realizar apuestas en esta plataforma. La participación en las apuestas es voluntaria y los usuarios son responsables de cumplir con las normativas legales de su región.</p>
+
+      <h3>2. Eventos de Combate de Robots</h3>
+      <p>Los eventos de combate de robots son programados por la universidad y aprobados por el comité organizador. Todas las apuestas realizadas son definitivas y no se reembolsarán, a menos que el evento sea cancelado por los organizadores.</p>
+
+      <h3>3. Colocación de Apuestas</h3>
+      <p>Las apuestas deben realizarse antes de que el combate de robots comience. Una vez colocada la apuesta, no se puede modificar ni cancelar. Asegúrate de verificar todos los detalles antes de confirmar tu apuesta.</p>
+
+      <h3>4. Pagos y Premios</h3>
+      <p>Las ganancias de las apuestas exitosas se añadirán a tu saldo después de que los resultados del combate se confirmen. Los pagos deben realizarse mediante transferencias bancarias u otros métodos aceptados. Todos los pagos se procesan de manera segura.</p>
+
+      <h3>5. Juego Responsable</h3>
+      <p>Te recomendamos que apuestes de manera responsable. Establece un presupuesto y no lo excedas. Si sientes que estás desarrollando un problema con el juego, busca ayuda profesional.</p>
+
+      <h3>6. Exención de Responsabilidad</h3>
+      <p>Esta plataforma es parte de un proyecto universitario. Aunque nos esforzamos por mantener el funcionamiento del sitio, no nos hacemos responsables de fallos técnicos o interrupciones.</p>
+      
+      <h2 class="text-center my-4">Preguntas Frecuentes (FAQ)</h2>
+      <div class="accordion" id="faqAccordion">
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqOne">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+              ¿Qué es el Apuestas de Combates de Robots?
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="faqOne" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              El Apuestas de Combates de Robots es una plataforma innovadora donde los usuarios pueden apostar en eventos de combate de robots. Estos eventos son organizados en nuestra universidad, y los robots compiten en combates, cada uno construido por estudiantes.
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqTwo">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              ¿Cómo puedo hacer una apuesta?
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="faqTwo" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Para hacer una apuesta, simplemente inicia sesión o regístrate, elige el evento de combate de robots en el que deseas apostar, selecciona el robot que crees que ganará e ingresa la cantidad que deseas apostar. Confirma tu apuesta, ¡y listo!
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqThree">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              ¿Puedo ver los combates de robots en vivo?
+            </button>
+          </h2>
+          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="faqThree" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              ¡Sí! Transmitimos los combates de robots en vivo a través de nuestra plataforma. Una vez que un combate comience, puedes verlo en tiempo real en la página del evento.
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqFour">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+              ¿Cómo puedo depositar y retirar dinero?
+            </button>
+          </h2>
+          <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="faqFour" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Puedes depositar dinero transfiriendo fondos a la cuenta bancaria proporcionada mediante un código QR. Asegúrate de incluir el número de referencia para validar tu depósito. Las retiradas se procesan de manera similar, y recibirás tus ganancias en tu cuenta bancaria vinculada.
+            </div>
+          </div>
+        </div>
+        
+        <div class="accordion-item">
+          <h2 class="accordion-header" id="faqFive">
+            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+              ¿Quién desarrolló esta plataforma?
+            </button>
+          </h2>
+          <div id="collapseFive" class="accordion-collapse collapse" aria-labelledby="faqFive" data-bs-parent="#faqAccordion">
+            <div class="accordion-body">
+              Esta plataforma fue creada como un proyecto final por dos estudiantes universitarios apasionados por la robótica y el desarrollo de software. El proyecto sirve tanto como herramienta educativa como plataforma de entretenimiento para los entusiastas de los combates de robots.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <footer th:replace="~{layout :: page_footer}"></footer>
+  </body>
 </html>

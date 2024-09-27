@@ -32,6 +32,7 @@ public class Robot {
     private double envergadura;
     private int n_armas;
     private boolean descalificado;
+    private boolean ocupado;
     private String jugador;
     private Date fecha_creacion;
     private String image;

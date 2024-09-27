@@ -61,6 +61,7 @@ public class RobotService {
         robot.setEnvergadura(robotRequest.getEnvergadura());
         robot.setN_armas(0);
         robot.setDescalificado(false);
+        robot.setOcupado(false);
         robot.setJugador(robotRequest.getJugador());
         robot.setFecha_creacion(new Date());
         robot.setArmas(robotRequest.getArmas());
@@ -71,6 +72,5 @@ public class RobotService {
     public List<Robot> searchByname(String query) {
         return robotRepository.findByNombreContainingIgnoreCase(query);
     }
-
 
 }

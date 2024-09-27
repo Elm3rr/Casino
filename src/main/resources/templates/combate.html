@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: page_head(pageTitle='My Gambling Site')}"></head>
+  <body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
+    <div class="container">
+    <h1 class="text-center my-4" sec:authorize="hasRole('ADMIN')">Administración de Combates</h1>
+    <h1 class="text-center my-4" sec:authorize="hasRole('USER')">Proximos Combates</h1>
+    <a class = "btn btn-primary" href="/admin/create_combate" sec:authorize="hasRole('ADMIN')">Crear robot</a>
+    <form class="d-flex mb-4" sec:authorize="hasRole('ADMIN')" action="/admin/buscar_en_combate" method="get">
+      <input class="form-control me-2" type="search" name="query" placeholder="Buscar combate por cualquier de los dos robots" aria-label="Search">
+      <button class="btn btn-outline-success" type="submit">Buscar</button>
+  </form>
+    <table class="table">
+      <thead>
+          <tr>
+              <th sec:authorize="hasRole('ADMIN')">CODIGO</th>
+              <th>ROBOT 1</th>
+              <th>ROBOT 2</th>
+              <th>FECHA COMBATE</th>
+              <th sec:authorize="hasRole('ADMIN')">FECHA CREACION</th>
+              <th>OPCIONES</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr th:each="combate : ${combates}">
+
+              <td th:text="${combate.id}" sec:authorize="hasRole('ADMIN')"></td>
+
+              <td>
+                <img th:src="@{'/images/' + ${combate.robot1.image}}" alt="Robot Image" width="100">
+              </td>
+              <td>
+                <img th:src="@{'/images/' + ${combate.robot2.image}}" alt="Robot Image" width="100">
+              </td>  
+
+              <td th:text="${#dates.format(combate.fechacombate, 'dd/MM/yyyy HH:mm')}"></td>
+
+              <td sec:authorize="hasRole('ADMIN')" th:text="${#dates.format(combate.fecha_creacion, 'dd/MM/yyyy')}"></td>
+ 
+              <td style="white-space:nowrap" sec:authorize="hasRole('USER')">
+                <a class="btn btn-primary btn-sm"
+                    th:href="@{/user/aspotar_combate(id=${combate.id})}">Apostar</a>
+              </td>
+
+              <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN')">
+                  <a class="btn btn-primary btn-sm"
+                      th:href="@{/admin/edit_robot(id=${combate.id})}">Editar</a>
+                  <a class="btn btn-danger btn-sm"
+                      th:href="@{/admin/delete_combate(id=${combate.id})}"
+                      onclick="return confirm('Are you sure?')">Eliminar</a>
+
+              </td>
+          </tr>
+      </tbody>
+      </table>
+    </div>
+
+    <footer th:replace="~{layout :: page_footer}"></footer>
+  </body>
+</html>

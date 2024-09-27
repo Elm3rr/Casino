@@ -5,10 +5,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -20,8 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.Proyecto.Final.DTO.CombateRequest;
 import com.Proyecto.Final.DTO.RobotRequest;
 import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.RobotService;
 
 import jakarta.validation.Valid;
@@ -33,6 +37,9 @@ public class AdminController {
 
     @Autowired
     private RobotService robotService;
+
+    @Autowired
+    private CombateService combateService;
     
     @GetMapping("/create_robot")
     public String create(Model model){
@@ -40,7 +47,6 @@ public class AdminController {
         model.addAttribute("robot", robotRequest);
         return "rrobot";
     }
-
     @PostMapping("/create_robot")
     public String create_robot(@Valid @ModelAttribute("robot") RobotRequest robotRequest, BindingResult result){
         if(robotRequest.getImage().isEmpty()){
@@ -147,5 +153,22 @@ public class AdminController {
         return "ranking"; 
     }
     
-
+    @PostMapping("/combates")
+    public String crear_combate(@RequestParam("selectedRobots") List <Long> selectedRobots, 
+    @RequestParam("fechacombate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
+    LocalDateTime fechacombate, Model model){
+        if(selectedRobots.size() !=2){
+            model.addAttribute("errorMessage", "Debe seleccionar exactamente dos robots");
+            model.addAttribute("robots", combateService.robots_disponibles());
+        }
+        
+        return null;
+    }
+    
+    @GetMapping("/create_combate")
+    public String select_robot(Model model){
+        List<Robot> robots = combateService.robots_disponibles();
+        model.addAttribute("robots", robots);
+        return "seleccion";
+    }
 }
