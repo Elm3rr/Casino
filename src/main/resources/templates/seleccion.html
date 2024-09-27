@@ -1,50 +1,56 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
   <head th:replace="~{layout :: page_head(pageTitle='My Gambling Site')}"></head>
+  <script>
+    function validarSeleccion(form){
+        const checkboxes = form.querySelectorAll('input[name="robotsSeleccionados"]:checked');
+        if(checkboxes.length !==2){
+            alert('Debes seleccionar exactamente dos robots para el combate');
+            return false;
+        }
+        return confirm('¿Estás seguro de crear este combate?');
+    }
+  </script>
   <body>
     <nav th:replace="~{layout :: page_navbar}"></nav>
-    <div class="container">
-        <h1 class="text-center my-4">SELECCIONADOR DE COMBATIENTES</h1>
-        <form th:action="@{/admin/combates}" method="post">
-        <div class="form-group">
-            <label for="fechacombate">Fecha y Hora del Combate:</label>
-            <input type="datetime-local" id="fechacombate" name="fechacombate" required />
-        </div>
-        <table class="table table-striped">
+    <h1>Crear Combate</h1>
+    <form th:action="@{/admin/combates}" th:object="${combateRequest}" method="post" onsubmit="return validarSeleccion(this)">
+        <table border="1">
             <thead>
                 <tr>
-                    <th>COODIGO</th>
-                    <th>NOMBRE</th>
-                    <th>VICTORIAS</th>
-                    <th>DERROTAS</th>
-                    <th>CONTROLADOR</th>
-                    <th>ARMAS</th>
-                    <th>FOTO</th>
-                    <th>SELECCIONAR</th>
+                    <th>Seleccionar</th>
+                    <th>Nombre</th>
+                    <th>Victorias</th>
+                    <th>Derrotas</th>
+                    <th>Altura</th>
+                    <th>Peso</th>
+                    <th>Controlador</th>
+                    <th>Robot</th>
                 </tr>
             </thead>
             <tbody>
-                <tr th:each="robot : ${robots}">
-                    <td th:text="${robot.id}"></td>
+                <tr th:each="robot:${robots}">
+                    <td>
+                        <input type="checkbox" name="robotsSeleccionados" th:value="${robot.id}"/>
+                    </td>
                     <td th:text="${robot.nombre}"></td>
                     <td th:text="${robot.victorias}"></td>
                     <td th:text="${robot.derrotas}"></td>
+                    <td th:text="${robot.altura}"></td>
+                    <td th:text="${robot.peso}"></td>
                     <td th:text="${robot.jugador}"></td>
-                    <td th:text="${robot.armas}"></td>
                     <td>
                         <img th:src="@{'/images/' + ${robot.image}}" alt="Robot Image" width="100">
                     </td>
-                    <td>
-                        <input type="checkbox" name="selectedRobots" th:value="${robot.id}"/>
-                    </td>
                 </tr>
             </tbody>
-            </table>
-            <button type="submit" class="btn btn-primary">Seleccionar Robots</button>
-        </form>
-    </div>
-    <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>
-    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+        </table>
+
+        <label for="fechacombate">Fecha del Combate:</label>
+        <input type="datetime-local" th:field="*{fechacombate}"/>
+        <p th:if="${#fields.hasErrors('fechacombate')}" th:errors="*{fechacombate}"></p>
+        <button type="submit">Crear Combate</button>
+    </form>
     <footer th:replace="~{layout :: page_footer}"></footer>
   </body>
 </html>

@@ -5,12 +5,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -154,21 +152,59 @@ public class AdminController {
     }
     
     @PostMapping("/combates")
-    public String crear_combate(@RequestParam("selectedRobots") List <Long> selectedRobots, 
-    @RequestParam("fechacombate") @DateTimeFormat(iso=DateTimeFormat.ISO.DATE_TIME)
-    LocalDateTime fechacombate, Model model){
-        if(selectedRobots.size() !=2){
-            model.addAttribute("errorMessage", "Debe seleccionar exactamente dos robots");
-            model.addAttribute("robots", combateService.robots_disponibles());
+    public String crear_combate(@RequestParam("robotsSeleccionados") List<Long> robotsSeleccionados,
+                                @Valid @ModelAttribute("combateRequest") CombateRequest combateRequest, 
+                                BindingResult result, Model model) {
+    
+        // Verificar la cantidad de robots seleccionados
+        System.out.println("Cantidad de robots seleccionados: " + robotsSeleccionados.size());
+    
+        // Verificar si no se seleccionaron exactamente 2 robots
+        if(robotsSeleccionados.size() != 2){
+            System.out.println("Error: No se seleccionaron exactamente dos robots.");
+            model.addAttribute("error", "Debes seleccionar exactamente dos robots");
+            List<Robot> robots = combateService.robots_disponibles();
+            model.addAttribute("robots", robots);
+            return "seleccion";
         }
-        
-        return null;
+    
+        if (result.hasErrors()) {
+            System.out.println("Error: Hay errores en los datos del formulario.");
+            result.getAllErrors().forEach(error -> {
+                System.out.println("Error: " + error.getDefaultMessage());
+            });
+            
+            List<Robot> robots = combateService.robots_disponibles();
+            model.addAttribute("robots", robots);
+            return "seleccion";
+        }
+    
+        // Verificar que se intenta guardar el combate
+        System.out.println("Guardando combate con robots seleccionados: " + robotsSeleccionados);
+    
+        try {
+            combateService.saveCombate(robotsSeleccionados, combateRequest);
+            System.out.println("Combate guardado exitosamente.");
+        } catch (Exception e) {
+            System.out.println("Error al guardar el combate: " + e.getMessage());
+            model.addAttribute("error", "Ocurrió un error al guardar el combate");
+            List<Robot> robots = combateService.robots_disponibles();
+            model.addAttribute("robots", robots);
+            return "seleccion";
+        }
+    
+        // Redireccionar al listado de combates
+        System.out.println("Redireccionando a /user/combates");
+        return "redirect:/user/combates";
     }
+    
+    
     
     @GetMapping("/create_combate")
     public String select_robot(Model model){
         List<Robot> robots = combateService.robots_disponibles();
         model.addAttribute("robots", robots);
+        model.addAttribute("combateRequest", new CombateRequest());
         return "seleccion";
     }
 }

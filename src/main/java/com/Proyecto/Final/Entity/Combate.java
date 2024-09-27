@@ -1,7 +1,11 @@
 package com.Proyecto.Final.Entity;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
 import java.util.List;
+
+import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,10 +39,18 @@ public class Combate {
 
     private String estado;
 
+    @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime fechacombate;
 
-    private LocalDateTime fecha_creacion;
+    private Date fecha_creacion;
 
     @OneToMany(mappedBy="combate")
     private List<Apuesta> apuestas;
+
+
+    @Override
+    public String toString() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
+        return fechacombate != null ? fechacombate.format(formatter) : "Fecha no disponible";
+    }
 }
