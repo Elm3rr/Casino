@@ -1,6 +1,5 @@
 package com.Proyecto.Final.Controlladores;
 
-
 import java.security.Principal;
 import java.util.List;
 
@@ -29,7 +28,6 @@ public class PublicController {
 
     @Autowired
     private RobotService robotService;
-
 
     @GetMapping("/login")
     public String login() {
@@ -120,7 +118,4 @@ public class PublicController {
     public String information(){
         return "information";
     }
-
-
-    
 }

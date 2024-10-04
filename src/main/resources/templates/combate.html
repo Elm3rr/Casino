@@ -6,8 +6,8 @@
     <div class="container">
         <h1 class="text-center my-4" sec:authorize="hasRole('ADMIN')">Administración de Combates</h1>
         <h1 class="text-center my-4" sec:authorize="hasRole('USER')">Próximos Combates</h1>
-        <a class="btn btn-primary" href="/admin/create_combate" sec:authorize="hasRole('ADMIN')">Crear robot</a>
-        <form class="d-flex mb-4" sec:authorize="hasRole('ADMIN')" action="/admin/buscar_en_combate" method="get">
+        <a class="btn btn-primary" href="/combate/crear" sec:authorize="hasRole('ADMIN')">Crear combate</a>
+        <form class="d-flex mb-4" sec:authorize="isAuthenticated()" action="/combate/buscar" method="get">
             <input class="form-control me-2" type="search" name="query" placeholder="Buscar combate por cualquier de los dos robots" aria-label="Search">
             <button class="btn btn-outline-success" type="submit">Buscar</button>
         </form>
@@ -39,8 +39,8 @@
                         <a class="btn btn-primary btn-sm" th:href="@{/user/apostar_combate(id=${combate.id})}">Apostar</a>
                     </td>
                     <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN')">
-                        <a class="btn btn-primary btn-sm" th:href="@{/admin/edit_robot(id=${combate.id})}">Editar</a>
-                        <a class="btn btn-danger btn-sm" th:href="@{/admin/delete_combate(id=${combate.id})}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                        <a class="btn btn-primary btn-sm" th:href="@{/combate/crear(id=${combate.id})}">Editar</a>
+                        <a class="btn btn-danger btn-sm" th:href="@{/combate/eliminar(id=${combate.id})}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
                     </td>
                 </tr>
             </tbody>

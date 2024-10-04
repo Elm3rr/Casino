@@ -8,13 +8,14 @@
             alert('Debes seleccionar exactamente dos robots para el combate');
             return false;
         }
-        return confirm('¿Estás seguro de crear este combate?');
+        return confirm('¿Estás seguro de continuar con este combate?');
     }
   </script>
   <body>
     <nav th:replace="~{layout :: page_navbar}"></nav>
-    <h1>Crear Combate</h1>
-    <form th:action="@{/admin/combates}" th:object="${combateRequest}" method="post" onsubmit="return validarSeleccion(this)">
+    <h1 th:text="${combateRequest.id==null} ? 'Editar Combate' : 'Crear Combate' "></h1>
+    <form th:action="@{/combate/crear_editar}" th:object="${combateRequest}" method="post" onsubmit="return validarSeleccion(this)">
+        <input type="hidden" name="id" th:value="${combateRequest.id}">
         <table border="1">
             <thead>
                 <tr>
@@ -31,7 +32,8 @@
             <tbody>
                 <tr th:each="robot:${robots}">
                     <td>
-                        <input type="checkbox" name="robotsSeleccionados" th:value="${robot.id}"/>
+                        <input type="checkbox" name="robotsSeleccionados" th:value="${robot.id}"
+                        th:checked="${robot.id==combateRequest.robot1_id || robot.id == combateRequest.robot2_id}"/>
                     </td>
                     <td th:text="${robot.nombre}"></td>
                     <td th:text="${robot.victorias}"></td>
@@ -47,9 +49,20 @@
         </table>
 
         <label for="fechacombate">Fecha del Combate:</label>
-        <input type="datetime-local" th:field="*{fechacombate}"/>
+        <input type="datetime-local" 
+               th:field="*{fechacombate}" 
+               th:value="${combateRequest.id!=null ? combateRequest.auxiliar_fecha : ''}"/>
+               <p th:if="${combateRequest.id!=null}">Fecha de Ultima Modificación: <span th:text="${combateRequest.getFechaUltimaModificacion()}"></span></p>
         <p th:if="${#fields.hasErrors('fechacombate')}" th:errors="*{fechacombate}"></p>
-        <button type="submit">Crear Combate</button>
+        
+        <label th:if="${combateRequest.id!=null}" for="estado">Estado del Combate:</label>
+        <select th:field="*{estado}" class="form-control" th:if="${combateRequest.id!=null}">
+            <option th:each="estado: ${estados}" th:value="${estado}" th:text="${estado}"
+                th:selected="${estado==combateRequest.estado}"></option>
+        </select>
+        
+        
+        <button type="submit" th:text="${combateRequest.id != null} ? 'Actualizar Combate' : 'Crear Combate'"></button>
     </form>
     <footer th:replace="~{layout :: page_footer}"></footer>
   </body>

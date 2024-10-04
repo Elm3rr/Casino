@@ -39,6 +39,8 @@ public class Combate {
 
     private String estado;
 
+    private boolean eliminado;
+
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime fechacombate;
 

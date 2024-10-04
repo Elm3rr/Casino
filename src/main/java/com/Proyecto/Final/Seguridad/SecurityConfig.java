@@ -20,15 +20,15 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**").hasRole("ADMIN")
-                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/admin/**", "/robot/**", "/combate/**").hasRole("ADMIN")
+                .requestMatchers("/user/**", "/saldo/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers("/public/**", "/images/**", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/public/login")
                 .permitAll()
-                .failureUrl("/public/login?error=true")  // Habilita el manejo de errores
+                .failureUrl("/public/login?error=true")
                 .defaultSuccessUrl("/public/", true)
             )
             .logout(logout -> logout.permitAll()

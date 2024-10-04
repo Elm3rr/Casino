@@ -1,0 +1,100 @@
+package com.Proyecto.Final.Controlladores;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import com.Proyecto.Final.DTO.CombateRequest;
+import com.Proyecto.Final.Entity.Combate;
+import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Service.CombateService;
+
+import jakarta.validation.Valid;
+
+@Controller
+@RequestMapping("/combate")
+public class CombateController {
+
+    @Autowired
+    private CombateService combateService;
+
+    @GetMapping("/eliminar")
+    public String deleteProduct(@RequestParam long id){
+        try{
+            combateService.ocultar_combate(id);
+            return "redirect:/user/combates";
+
+        }catch (Exception ex){
+            System.out.println("Exception: " + ex.getMessage()); 
+        }
+        return "redirect:/public/ranking";
+    }
+
+    @GetMapping("/crear")
+    public String crear_robot(@RequestParam(value="id", required = false) Long id, Model model){
+        CombateRequest combateRequest;
+        if(id != null){
+            Combate combate = combateService.findById(id);
+            combateRequest = combateService.ActualData(combate);
+        }else{
+            combateRequest = new CombateRequest();
+        }
+        List<Robot> robots = combateService.robots_disponibles();
+        List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
+        model.addAttribute("robots", robots);
+        model.addAttribute("estados", estados);
+        model.addAttribute("combateRequest", combateRequest);
+
+        return "seleccion";
+    }
+
+    @PostMapping("/crear_editar")
+    public String crear_editar(@RequestParam("robotsSeleccionados") List<Long> robotsSeleccionados,
+    @Valid @ModelAttribute("combateRequest") CombateRequest combateRequest, BindingResult result, Model model){
+        
+        if(robotsSeleccionados.size() != 2){
+            model.addAttribute("error", "Debes seleccionar exactamente dos robots");
+            List<Robot> robots = combateService.robots_disponibles();
+            List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
+            model.addAttribute("robots", robots);
+            model.addAttribute("estados", estados);
+            return "seleccion";
+        }
+
+        if(result.hasErrors()){
+            List<Robot> robots = combateService.robots_disponibles();
+            List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
+            model.addAttribute("robots", robots);
+            model.addAttribute("estados", estados);
+            return "seleccion";
+        }
+
+        try{
+            combateService.saveCombate(robotsSeleccionados, combateRequest);
+        }catch(Exception e){
+            model.addAttribute("error", "Ocurrió un error al guardar el combate");
+            List<Robot> robots = combateService.robots_disponibles();
+            List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
+            model.addAttribute("robots", robots);
+            model.addAttribute("estados", estados);
+            return "seleccion";
+        }
+        return "redirect:/user/combates";
+    }
+    
+    @GetMapping("/buscar")
+    public String buscar_combate(@RequestParam("query") String query, Model model){
+        List<Combate> combates = combateService.Lista_robot_buscado(query, query);
+        model.addAttribute("combates", combates);
+        return "combate";
+    }
+
+}
