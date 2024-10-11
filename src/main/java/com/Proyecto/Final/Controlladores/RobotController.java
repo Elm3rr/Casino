@@ -1,27 +1,23 @@
 package com.Proyecto.Final.Controlladores;
 
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.Date;
+import java.io.IOException;
+
+import java.security.Principal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.multipart.MultipartFile;
 
 import com.Proyecto.Final.DTO.RobotRequest;
 import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.RobotService;
 
 import jakarta.validation.Valid;
@@ -29,120 +25,100 @@ import jakarta.validation.Valid;
 @Controller
 @RequestMapping("/robot")
 public class RobotController {
-    
+
     @Autowired
-    private RobotService robotService;
-    
-    @GetMapping("/crear")
-    public String create(Model model){
-        RobotRequest robotRequest = new RobotRequest();
-        model.addAttribute("robot", robotRequest);
-        return "rrobot";
-    }
-    @PostMapping("/crear")
-    public String create_robot(@Valid @ModelAttribute("robot") RobotRequest robotRequest, BindingResult result){
-        if(robotRequest.getImage().isEmpty()){
-            result.addError(new FieldError("robotRequest", "image", "El archivo de imagen no puede estar vacio"));
-        }
+    RobotService robotService;
 
-        if(result.hasErrors()){
-            return "rrobot";
-        }
-        
-        MultipartFile image = robotRequest.getImage();
-        Date creado = new Date();
-        String Nombre_imagen = creado.getTime() + "-" + image.getOriginalFilename();
+    @Autowired
+    ImagenService imagenService;
 
+    @PostMapping("/eliminar") 
+    public String eliminate(@RequestParam Long id, @RequestParam("motivo") String motivo, Principal principal){
         try {
-            String direccion_subida = "src/main/resources/static/images/";
-            Path uploadPath = Paths.get(direccion_subida);
-
-            if(!Files.exists(uploadPath)){
-                Files.createDirectories(uploadPath);
-            }try(InputStream inputStream = image.getInputStream()){
-                Files.copy(inputStream, Paths.get(direccion_subida, Nombre_imagen), StandardCopyOption.REPLACE_EXISTING);                
-            }
-        }catch(Exception ex){
+            robotService.ocultar_robot(id, motivo, principal);
+            return "redirect:/robots"; 
+        } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
-
-        robotService.saveRobot(robotRequest, Nombre_imagen);
-        return "redirect:/public/ranking";
+        return "redirect:/robots"; 
     }
 
-    @GetMapping("/editar")
-    public String edit_robot(Model model, @RequestParam long id){
-        try{
-            Robot robot = robotService.findRobot(id);
-            model.addAttribute("robot", robot);
-            RobotRequest robotRequest = robotService.ActualData(robot);
-            model.addAttribute("request", robotRequest);
-
-        }catch(Exception ex){
-            System.out.println("Exception: " + ex.getMessage());
-            return "redirect:/public/ranking";
-        }
-        
-        return "edit_robot";
-    }
-
-    @PostMapping("/editar")
-    public String edit_robot(Model model, @RequestParam long id, @Valid @ModelAttribute("request") RobotRequest robotRequest, BindingResult result){
-        try{
-            Robot robot = robotService.findRobot(id);
-            model.addAttribute("robot", robot);
-
-            if(result.hasErrors()){
-                return "edit_robot";
-            }
-            String Nombre_imagen;
-
-            if(!robotRequest.getImage().isEmpty()){
-                String direccion_subida = "src/main/resources/static/images/";
-                Path oldPath = Paths.get(direccion_subida + robot.getImage());
-                try{
-                    Files.delete(oldPath);
-                }catch(Exception ex){
-                    System.out.println("Exception: " + ex.getMessage());
-                }
-                        
-                MultipartFile image = robotRequest.getImage();
-                Date creado = new Date();
-                Nombre_imagen = creado.getTime() + "-" + image.getOriginalFilename();
-                try(InputStream inputStream = image.getInputStream()){
-                    Files.copy(inputStream, Paths.get(direccion_subida, Nombre_imagen), StandardCopyOption.REPLACE_EXISTING);                
-                }
-            }else{
-                Nombre_imagen = robot.getImage();
-            }
-
-            robotService.saveRobot(robotRequest, Nombre_imagen);
-
-
-        }catch(Exception ex){
+    @GetMapping("/restaurar") 
+    public String restaurar(@RequestParam Long id){
+        try {
+            robotService.restaurar_robot(id);
+            return "redirect:/robots"; 
+        } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
-        return "redirect:/public/ranking";
-    }
-
-
-    @GetMapping("/eliminar")
-    public String deleteProduct(@RequestParam long id){
-        try{
-            robotService.ocultar_robot(id);
-            return "redirect:/public/ranking";
-
-        }catch (Exception ex){
-            System.out.println("Exception: " + ex.getMessage()); 
-        }
-        return "redirect:/public/ranking";
+        return "redirect:/robots"; 
     }
 
     @GetMapping("/buscar")
-    public String buscar_robot(@RequestParam("query") String query, Model model){
-        List<Robot> robots = robotService.searchByname(query);
+    public String buscar_robot(Model model, 
+    @RequestParam(value="estado", defaultValue = "Disponible") String estado,
+    @RequestParam(value="busqueda", required=false) String busqueda){
+        List<Robot> robots;
+        if(busqueda != null && !busqueda.isEmpty()){
+            robots = robotService.robot_busqueda(estado, busqueda);
+        }else{
+            robots = robotService.robots_list_habilitados(estado);
+        }
+        model.addAttribute("estado", estado);
         model.addAttribute("robots", robots);
-        return "ranking"; 
+        return "robots"; 
+    }
+    
+    @GetMapping("/guardar")
+    public String create(@RequestParam(required = false) Long id, Model model){
+        RobotRequest robotRequest;
+        if(id!=null){
+            try{
+                Robot robot = robotService.findRobot(id);
+                model.addAttribute("robot", robot);
+                robotRequest = robotService.ActualData(robot);
+            }catch(Exception ex){
+                System.out.println("Exception: " + ex.getMessage());
+                return "redirect: /robots";
+            }
+        }else{
+            robotRequest = new RobotRequest();
+            model.addAttribute("robot", new Robot());
+        }
+        model.addAttribute("request", robotRequest);
+        return "r_robot";
+    }
+
+    @PostMapping("/guardar")
+    public String save(@RequestParam(required = false) Long id,
+    @Valid  @ModelAttribute("request") RobotRequest robotRequest,
+    BindingResult result, Model model, Principal principal){
+        if(result.hasErrors()){
+            model.addAttribute("robot", (id!=null) ? robotService.findRobot(id): new Robot());
+            return "r_robot";
+        }try{
+            String nombreImagen = null;
+
+            if(id!=null){
+                Robot robot = robotService.findRobot(id);
+
+                if(!robotRequest.getImage().isEmpty() && robot.getImage()!=null){
+                    imagenService.deleteImage(robot.getImage());
+                }
+            }
+
+            if(!robotRequest.getImage().isEmpty()){
+                nombreImagen = imagenService.buildImage(robotRequest.getImage());
+            }
+
+            robotService.saveRobot(robotRequest, nombreImagen, principal);
+
+        }catch(IOException ex){
+            System.out.println("Error: " + ex.getMessage());
+            return "r_robot";
+        }
+
+        return "redirect:/robots";
     }
     
 }

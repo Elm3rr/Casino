@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+<head th:replace="~{layout :: page_head(pageTitle='My Gambling Site')}"></head>
+<body>
+    <div class="wrapper"> 
+        <nav th:replace="~{layout :: page_navbar}"></nav>
+        
+        <main class="container"> 
+            <h1 class="text-center my-4" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Administración de Usuarios</h1>
+
+            <form action="/data/buscar_usuarios" method="get" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
+                <div class="input-group mb-3">
+                    <select name="estado" class="form-select" aria-label="Selecciona el estado">
+                        <option value="Habilitado">Habilitado</option>
+                        <option value="Eliminado">Eliminado</option>
+                        <option value="Vetado">Vetados</option>
+                    </select>
+                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre de usuario o CUI" aria-label="Buscar">
+                    <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+                </div>
+            </form>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>NOMBRE</th>
+                        <th>APELLIDO</th>
+                        <th>USERNAME</th>
+                        <th>CORREO</th>
+                        <th>FECHA DE REGISTRO</th>
+                        <th>ULT. ACTUALIZACION</th>
+                        <th th:if="${estado == 'Eliminado' or estado == 'Vetado'}">
+                            <span th:text="${estado == 'Eliminado' ? 'Motivo de Eliminación' : 'Motivo de Veto'}"></span>
+                        </th>
+                        <th th:if="${estado == 'Vetado'}">Moderador que Vetó</th>
+                        <th sec:authorize="hasRole('ADMIN') or hasRole('MOD')" 
+                            th:if="${(estado == 'Vetado' and (#authentication.principal.authorities.contains('ROLE_ADMIN') or #authentication.principal.authorities.contains('ROLE_MOD'))) or 
+                                    (estado == 'Habilitado')}">
+                            OPCIONES
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="usuario : ${usuarios}">
+                        <td th:text="${usuario.nombre}"></td>
+                        <td th:text="${usuario.apellido}"></td>
+                        <td th:text="${usuario.username}"></td>
+                        <td th:text="${usuario.email}"></td>
+                        <td th:text="${usuario.fechaCreacion.toString().substring(0,10)}"></td>
+                        <td th:text="${usuario.fechaActualizacion.toString().substring(0,10)}"></td>
+                        <td th:if="${estado == 'Eliminado' or estado == 'Vetado'}">
+                            <span th:text="${estado == 'Eliminado' ? usuario.motivoEliminacion : usuario.motivoVeto}"></span>
+                        </td>
+                        <td th:if="${estado == 'Vetado'}" th:text="${usuario.vetadoPorModerador.nombre}"></td>
+                        <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN') or hasRole('MOD')">
+                            <div th:if="${estado =='Habilitado'}">
+                                <button type="button" class="btn btn-danger btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#modalVetar' + ${usuario.id}">Vetar</button>
+                            </div>
+                            <div th:if="${estado == 'Vetado'}">
+                                <button type="button" class="btn btn-warning btn-sm" 
+                                        data-bs-toggle="modal" 
+                                        th:data-bs-target="'#modalRestaurar' + ${usuario.id}">Restaurar</button>
+                            </div>
+
+                            <!-- Modal para confirmar veto y agregar motivo -->
+                            <div th:id="'modalVetar' + ${usuario.id}" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Motivo de Veto</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form th:action="@{/data/vetar_usuario(id=${usuario.id})}" method="post">
+                                            <div class="modal-body">
+                                                <div class="mb-3">
+                                                    <label for="motivo" class="form-label">Motivo:</label>
+                                                    <input type="text" name="motivo" placeholder="Ingresa el motivo" class="form-control" required>
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-danger">Eliminar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div th:id="'modalRestaurar' + ${usuario.id}" class="modal fade" tabindex="-1">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">Confirmar Restauración</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <form th:action="@{/data/restaurar_usuario(id=${usuario.id})}" method="post">
+                                            <div class="modal-body">
+                                                <p>¿Está seguro de que desea restaurar a este usuario?</p>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                                <button type="submit" class="btn btn-success">Restaurar</button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </main>
+
+        <footer th:replace="~{layout :: page_footer}"></footer>
+    </div>
+</body>
+</html>

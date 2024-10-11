@@ -1,8 +1,8 @@
 package com.Proyecto.Final.Service;
 
-import java.util.Date;
 import java.util.List;
 import java.time.format.DateTimeFormatter;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -11,8 +11,10 @@ import org.springframework.stereotype.Service;
 import com.Proyecto.Final.DTO.CombateRequest;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Entity.Usuario;
 import com.Proyecto.Final.Repository.CombateRepository;
 import com.Proyecto.Final.Repository.RobotRepository;
+import com.Proyecto.Final.Repository.UserRepository;
 
 @Service
 public class CombateService {
@@ -22,16 +24,20 @@ public class CombateService {
     @Autowired
     private RobotRepository robotRepository;
 
-    public List<Combate> Lista_Combates_Pendientes(){
-        return combateRepository.findByEstadoAndEliminadoFalseOrderByFechacombateAsc("Pendiente", PageRequest.of(0,10));
+    @Autowired
+    private UserRepository userRepository;
+
+    //Logica de busquedas
+    public List<Combate> Lista_Combates_Pendientes(String estado){
+        return combateRepository.findByEstadoAndEliminadoVetadoFalseOrderByFechacombateAsc(estado, PageRequest.of(0,10));
     }
 
-    public List<Combate> Lista_robot_buscado(String nombre1, String nombre2){
-        return combateRepository.findByRobot1NombreContainingOrRobot2NombreContaining(nombre1, nombre2);
+    public List<Combate> Combate_buscado(String estado, String busqueda){
+        return combateRepository.findByRobot1NombreContainingAndEstadoContainingOrRobot2NombreContainingAndEstadoContaining(busqueda, estado, busqueda, estado);
     }
 
-    public List<Robot> robots_disponibles(){
-        return robotRepository.findByOcupadoFalse();
+    public List<Robot> robots_disponibles(String estado){
+        return robotRepository.findByEstado(estado);
     }
 
     public Combate findById(Long id){
@@ -43,6 +49,29 @@ public class CombateService {
         String auxiliar = combateRequest.getFechacombate().format(formatter);
         return auxiliar;
     }
+
+    public void ocultar_combate(long id, Principal principal){
+        Usuario usuario = userRepository.findByUsername(principal.getName())            
+        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        Combate combate = combateRepository.findById(id).get();
+        combate.setEstado("Eliminado");
+        combate.setEliminadoVetado(true);
+        combate.setCombateEliminadoPor(usuario);
+        Robot robot1 = combate.getRobot1();
+        Robot robot2 = combate.getRobot2();
+        if (robot1 != null) {
+            robot1.setEstado("Disponible");
+            robotRepository.save(robot1);
+        }
+        if (robot2 != null) {
+            robot2.setEstado("Disponible");
+            robotRepository.save(robot2);
+        }
+        combateRepository.save(combate);
+    }
+
+    //Actualización y registro de nuevos combates
     public CombateRequest ActualData(Combate combate){
         CombateRequest combateRequest = new CombateRequest();
         combateRequest.setId(combate.getId());
@@ -54,18 +83,15 @@ public class CombateService {
         return combateRequest;
     }
 
-    public void ocultar_combate(long id){
-        Combate combate = combateRepository.findById(id).get();
-        combate.setEliminado(true);
-        combateRepository.save(combate);
-    }
+    public Combate saveCombate(List<Long> robotsSeleccionados, CombateRequest combateRequest, Principal principal){
 
-    public Combate saveCombate(List<Long> robotsSeleccionados, CombateRequest combateRequest){
+        Usuario usuario = userRepository.findByUsername(principal.getName())            
+        .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
         Combate combate;
 
         if(combateRequest.getId()== null){
             combate = new Combate();
-            combate.setFecha_creacion(new Date());
             combateRequest.setAuxiliar_fecha(null);
         }else{
             combate = combateRepository.findById(combateRequest.getId())
@@ -81,6 +107,8 @@ public class CombateService {
         Robot robot2 = robotRepository.findById(combateRequest.getRobot2_id())
         .orElseThrow(() -> new IllegalArgumentException("Robot 2 no encontrado"));
 
+        combate.setOrganizadoPor(usuario);
+        
         combate.setRobot1(robot1);
         combate.setRobot2(robot2);
 
@@ -88,6 +116,10 @@ public class CombateService {
         
         combate.setEstado(combateRequest.getId() == null ? "Pendiente" : combateRequest.getEstado());
 
-        return combateRepository.save(combate);
+        try {
+            return combateRepository.save(combate);
+        } catch (Exception e) {
+            throw new RuntimeException("Error al guardar el combate: " + e.getMessage());
+        }
     }
 }

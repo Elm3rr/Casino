@@ -1,17 +1,13 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
-  <head th:replace="~{layout :: page_head(pageTitle='HOME')}"></head>
+  <head th:replace="~{layout :: page_head(pageTitle='Error 403 - Acceso Prohibido')}"></head>
   <body>
     <div class="wrapper">
-      <nav th:replace="~{layout :: page_navbar}"></nav>
         
       <main th:fragment="content">
-          <h1>BIENVENIDO UWU</h1>
-
-          <div th:if="${error}" class="alert alert-danger">
-            <p th:text="${error}"></p>
-        </div>
-        
+          <h1>Error 403 - Acceso Prohibido</h1>
+          <p>Lo sentimos, pero no tienes permiso para acceder a esta página.</p>
+          <a href="/" class="btn btn-primary">Volver al Inicio</a>
       </main>
 
       <footer th:replace="~{layout :: page_footer}"></footer>

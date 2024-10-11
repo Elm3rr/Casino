@@ -20,27 +20,33 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**", "/robot/**", "/combate/**").hasRole("ADMIN")
-                .requestMatchers("/user/**", "/saldo/**").hasAnyRole("USER", "ADMIN")
-                .requestMatchers("/public/**", "/images/**", "/css/**", "/js/**").permitAll()
+                .requestMatchers("/admin/**", "/transaccion/**", "/auditoria/**").hasRole("ADMIN")
+                .requestMatchers( "/robot/**", "/combate/**", "/mod/**", "/data/**").hasAnyRole("ADMIN", "MOD")
+                .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MOD")
+                .requestMatchers("/saldo/**").hasRole("USER")
+                .requestMatchers("**", "/images/**", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
-                .loginPage("/public/login")
+                .loginPage("/login")
                 .permitAll()
-                .failureUrl("/public/login?error=true")
-                .defaultSuccessUrl("/public/", true)
+                .failureUrl("/login?error=true")
+                .defaultSuccessUrl("/", true)
             )
             .logout(logout -> logout.permitAll()
-            .logoutSuccessUrl("/public/login")
+            .logoutSuccessUrl("/login")
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
-                .invalidSessionUrl("/public/login")
+                .invalidSessionUrl("/login")
                 .maximumSessions(1)
                 .expiredSessionStrategy(request -> {
-                    request.getResponse().sendRedirect("/public/login");
+                    request.getResponse().sendRedirect("/login");
                 })
+
+            )
+            .exceptionHandling(exception-> exception
+            .accessDeniedPage("/error/403")
             );
 
         return http.build();

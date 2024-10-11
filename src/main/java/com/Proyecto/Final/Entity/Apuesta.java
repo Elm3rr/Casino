@@ -2,6 +2,8 @@ package com.Proyecto.Final.Entity;
 
 import java.util.Date;
 
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -26,10 +28,15 @@ public class Apuesta {
     private Combate combate;
 
     @ManyToOne
+    @JoinColumn(name="usuario_id")
+    private Usuario usuario;
+
+    @ManyToOne
     @JoinColumn(name="robot_id")
     private Robot robotApostado;
 
     private double monto;
 
-    private Date fecha_apuesta;
+    @CreationTimestamp
+    private Date fechaCreacion;
 }

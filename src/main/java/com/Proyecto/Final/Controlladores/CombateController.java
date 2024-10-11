@@ -1,6 +1,7 @@
 package com.Proyecto.Final.Controlladores;
 
 import java.util.List;
+import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,19 +28,20 @@ public class CombateController {
     private CombateService combateService;
 
     @GetMapping("/eliminar")
-    public String deleteProduct(@RequestParam long id){
+    public String deleteProduct(@RequestParam long id, Principal principal){
         try{
-            combateService.ocultar_combate(id);
+            combateService.ocultar_combate(id, principal);
             return "redirect:/user/combates";
 
         }catch (Exception ex){
             System.out.println("Exception: " + ex.getMessage()); 
         }
-        return "redirect:/public/ranking";
+        return "redirect:/robots";
     }
 
     @GetMapping("/crear")
-    public String crear_robot(@RequestParam(value="id", required = false) Long id, Model model){
+    public String crear_robot(@RequestParam(value="id", required = false) Long id, Model model,
+    @RequestParam(value="estado", defaultValue="Desocupado") String estado){
         CombateRequest combateRequest;
         if(id != null){
             Combate combate = combateService.findById(id);
@@ -47,7 +49,7 @@ public class CombateController {
         }else{
             combateRequest = new CombateRequest();
         }
-        List<Robot> robots = combateService.robots_disponibles();
+        List<Robot> robots = combateService.robots_disponibles(estado);
         List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
         model.addAttribute("robots", robots);
         model.addAttribute("estados", estados);
@@ -58,11 +60,12 @@ public class CombateController {
 
     @PostMapping("/crear_editar")
     public String crear_editar(@RequestParam("robotsSeleccionados") List<Long> robotsSeleccionados,
-    @Valid @ModelAttribute("combateRequest") CombateRequest combateRequest, BindingResult result, Model model){
+    @Valid @ModelAttribute("combateRequest") CombateRequest combateRequest, BindingResult result, Model model,
+    @RequestParam(value="estado", defaultValue="Desocupado") String estado, Principal principal){
         
         if(robotsSeleccionados.size() != 2){
             model.addAttribute("error", "Debes seleccionar exactamente dos robots");
-            List<Robot> robots = combateService.robots_disponibles();
+            List<Robot> robots = combateService.robots_disponibles(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
@@ -70,7 +73,7 @@ public class CombateController {
         }
 
         if(result.hasErrors()){
-            List<Robot> robots = combateService.robots_disponibles();
+            List<Robot> robots = combateService.robots_disponibles(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
@@ -78,10 +81,10 @@ public class CombateController {
         }
 
         try{
-            combateService.saveCombate(robotsSeleccionados, combateRequest);
+            combateService.saveCombate(robotsSeleccionados, combateRequest, principal);
         }catch(Exception e){
             model.addAttribute("error", "Ocurrió un error al guardar el combate");
-            List<Robot> robots = combateService.robots_disponibles();
+            List<Robot> robots = combateService.robots_disponibles(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
@@ -90,11 +93,5 @@ public class CombateController {
         return "redirect:/user/combates";
     }
     
-    @GetMapping("/buscar")
-    public String buscar_combate(@RequestParam("query") String query, Model model){
-        List<Combate> combates = combateService.Lista_robot_buscado(query, query);
-        model.addAttribute("combates", combates);
-        return "combate";
-    }
 
 }

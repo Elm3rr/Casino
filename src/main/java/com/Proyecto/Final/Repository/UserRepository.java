@@ -1,16 +1,18 @@
 package com.Proyecto.Final.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.Proyecto.Final.Entity.Usuario;
-import com.Proyecto.Final.Entity.Persona;
 
 public interface UserRepository extends JpaRepository <Usuario, Long> {
+//Manejar la creacion de moderador y admin
+    List<Usuario> findByEstadoAndEstadoNotIn(String estado, List<String> estados);
 
-    Optional<Persona> findByUsername(String username);
-    Optional<Persona> findByEmail(String email);
-    Optional<Persona> findByCui(String cui);
-    Optional<Usuario> findApostadorByUsername(String username);
+    List<Usuario> findByEstadoAndUsernameContainingOrEstadoAndCui(String estado, String busqueda, String estado2, String busqueda2);
+
+    Optional<Usuario> findByUsername(String username);
+
 }

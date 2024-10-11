@@ -8,7 +8,12 @@ import java.util.List;
 
 
 public interface RobotRepository extends JpaRepository <Robot, Long>{
-    List<Robot> findByDescalificadoFalseOrderByVictoriasDesc(Pageable pageable);
-    List<Robot> findByNombreContainingIgnoreCase(String nombre);
-    List<Robot> findByOcupadoFalse();
+
+    List<Robot> findByEstadoAndEliminadoDescalificadoFalseOrderByVictoriasDesc(String Estado, Pageable pageable);
+
+    List<Robot> findByEstadoOrderByVictoriasDesc(String Estado, Pageable pageable);
+    
+    List<Robot> findByEstadoAndNombreContainingOrEstadoAndJugadorContaining(String estado, String busqueda, String estado2, String busqueda2);
+    
+    List<Robot> findByEstado(String estado);
 }

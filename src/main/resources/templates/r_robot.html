@@ -6,7 +6,7 @@
         <div class="row">
             <div class="col-md-8 mx-auto rounded border p-4 m-4">
                 <h2 class="text-center mb-5" th:text="${#strings.isEmpty(robot.id) ? 'Nuevo Robot' : 'Actualizar Robot'}"></h2>
-                <form action="#" method="post" enctype="multipart/form-data" th:object="${robot}">
+                <form action="#" method="post" enctype="multipart/form-data" th:object="${request}">
                     
                     <!-- Mostrar el campo "CODIGO" solo si estamos editando un robot -->
                     <div class="row mb-3" th:if="${!#strings.isEmpty(robot.id)}">
@@ -92,7 +92,7 @@
                             <button type="submit" class="btn btn-primary">Guardar</button>
                         </div>
                         <div class="col-sm-4 d-grid">
-                            <a class="btn btn-outline-primary" href="/public/" role="button">Cancelar</a>
+                            <a class="btn btn-outline-primary" href="/" role="button">Cancelar</a>
                         </div>
                     </div>
                 </form>

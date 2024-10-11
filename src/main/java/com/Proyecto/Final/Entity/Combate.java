@@ -5,6 +5,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import jakarta.persistence.Entity;
@@ -39,16 +41,29 @@ public class Combate {
 
     private String estado;
 
-    private boolean eliminado;
+    private String motivoeliminacion;
+
+    private boolean eliminadoVetado;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     private LocalDateTime fechacombate;
 
-    private Date fecha_creacion;
+    @CreationTimestamp
+    private Date fechaCreacion;
+
+    @UpdateTimestamp
+    private Date fechaActualizacion;
+
+    @ManyToOne
+    @JoinColumn(name = "creado_usuario_id")
+    private Persona organizadoPor;
+
+    @ManyToOne
+    @JoinColumn(name = "eliminado_usuario_id")
+    private Persona CombateEliminadoPor;
 
     @OneToMany(mappedBy="combate")
     private List<Apuesta> apuestas;
-
 
     @Override
     public String toString() {

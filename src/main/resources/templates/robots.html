@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: page_head(pageTitle='My Gambling Site')}"></head>
+  <body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
+    <div class="container">
+        <div th:fragment="content">
+            <h1 class="text-center my-4" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Administración de Robots</h1>
+            <h1 class="text-center my-4" sec:authorize="!hasAnyRole('ADMIN', 'MOD')">Top 10 Robots</h1>
+            <a class="btn btn-primary" href="/robot/guardar" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Crear robot</a>
+        </div>
+
+        <form action="/robot/buscar" method="get" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
+            <div class="input-group mb-3">
+                <select name="estado" class="form-select" aria-label="Selecciona el estado">
+                    <option value="Disponible">Disponibles</option>
+                    <option value="Ocupado">Ocupados</option>
+                    <option sec:authorize="hasRole('ADMIN')" value="Eliminado">Eliminados</option>
+                </select>
+                <input type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre del controlador o del robot" aria-label="Buscar">
+                <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+            </div>
+        </form>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>NOMBRE</th>
+                    <th>VICTORIAS</th>
+                    <th>DERROTAS</th>
+                    <th>CONTROLADOR</th>
+                    <th>ARMAS</th>
+                    <th>FECHA DE CREACION</th>
+                    <th>ULT. ACTUALIZACION</th>
+                    <th>FOTO</th>
+                    <th sec:authorize="hasRole('ADMIN') or hasRole('MOD')" 
+                        th:if="${!(estado == 'Eliminado' and #authentication.principal.authorities.contains('ROLE_MOD'))}">
+                        OPCIONES
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="robot : ${robots}">
+                    <td th:text="${robot.nombre}"></td>
+                    <td th:text="${robot.victorias}"></td>
+                    <td th:text="${robot.derrotas}"></td>
+                    <td th:text="${robot.jugador}"></td>
+                    <td th:text="${robot.armas}"></td>
+                    <td th:text="${robot.fechaCreacion.toString().substring(0,10)}"></td>
+                    <td th:text="${robot.fechaActualizacion.toString().substring(0,10)}"></td>
+                    <td>
+                        <img th:src="@{'/images/' + ${robot.image}}" alt="Robot Image" width="100">
+                    </td>
+                    <td style="white-space:nowrap" 
+                        sec:authorize="hasRole('ADMIN') or hasRole('MOD')">
+                        <!-- Botón Editar -->
+                        <div th:if="${estado !='Eliminado'}">
+                            <a class="btn btn-primary btn-sm" 
+                            th:href="@{/robot/editar(id=${robot.id})}">Editar</a>
+                            
+                            <!-- Botón Eliminar que abre el modal -->
+                            <button type="button" class="btn btn-danger btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    th:data-bs-target="'#modalEliminar' + ${robot.id}">Eliminar</button>
+                        </div>
+                        <!-- Modal para confirmar eliminación y agregar motivo -->
+                        <div th:id="'modalEliminar' + ${robot.id}" class="modal fade" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Motivo de Eliminación</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form th:action="@{/robot/eliminar(id=${robot.id})}" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="motivo" class="form-label">Motivo:</label>
+                                                <input type="text" name="motivo" placeholder="Ingresa el motivo" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Botón Restaurar -->
+                        <div th:if="${robot.eliminadoDescalificado}"
+                        sec:authorize="hasRole('ADMIN')">
+                        <a class="btn btn-success btn-sm" 
+                           th:href="@{/robot/restaurar(id=${robot.id})}">Restaurar</a>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <footer th:replace="~{layout :: page_footer}"></footer>
+  </body>
+</html>

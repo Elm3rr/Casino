@@ -7,21 +7,50 @@
     <title th:text="${pageTitle}">ROBOT GAMBLING</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-</head>
+    <style>
+      html, body {
+          height: 100%;
+          margin: 0;
+      }
+
+      .wrapper {
+          display: flex;
+          flex-direction: column;
+          min-height: 100vh; 
+      }
+
+      main {
+          flex: 1; 
+      }
+
+      .navbar-brand {
+          margin-left: 0; /* Mueve el texto hacia la izquierda */
+      }
+
+      .navbar-nav {
+          margin-left: 0; 
+          margin-right: 1rem; 
+      }
+
+      .btn {
+          margin-left: 0.5rem; /* Ajusta el margen de los botones */
+      }
+  </style>
+  </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary border-bottom" th:fragment="page_navbar">
-        <div class="container">
+        <div class="container-fluid"> <!-- Cambia container por container-fluid -->
           <a class="navbar-brand" href="/">Gambling Robot</a>
           <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item">
-                <a class="nav-link text-dark" aria-current="page" href="/public/">Home</a>
+              <li class="nav-item" sec:authorize="!isAuthenticated() or hasRole('USER')">
+                <a class="nav-link text-dark" href="/robots">Ranking robots</a>
               </li>
-              <li class="nav-item">
-                <a class="nav-link text-dark" href="/public/ranking">Ranking</a>
+              <li class="nav-item" sec:authorize="hasAnyRole('MOD', 'ADMIN')">
+                <a class="nav-link text-dark" href="/robots">Robots</a>
               </li>
               <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a class="nav-link text-dark" href="/user/combates">Combates</a>
@@ -29,26 +58,35 @@
               <li class="nav-item" sec:authorize="isAuthenticated()">
                 <a class="nav-link text-dark" href="/user/apuestas">Apuestas</a>
               </li>
+              <li class="nav-item" sec:authorize="hasAnyRole('MOD', 'ADMIN')">
+                <a class="nav-link text-dark" href="/data/usuarios">Usuarios</a>
+              </li>
               <li class="nav-item" sec:authorize="!isAuthenticated()">
-                <a class="nav-link text-dark" href="/public/terms-QA">Terminos</a>
+                <a class="nav-link text-dark" href="/terms-QA">Terminos</a>
               </li>
               <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link text-dark" href="/admin/usuarios">Usuarios</a>
+                <a class="nav-link text-dark" href="/admin/usuarios">Transacciones</a>
               </li>
-
-
-
+              <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link text-dark" href="/admin/usuarios">Auditoria</a>
+              </li>
             </ul>
             
             <ul class="navbar-nav me-3" sec:authorize="isAuthenticated()">
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
-                  <span th:text="${username}"></span>
+                  <span th:if="${username != null}" th:text="${username}"></span>
+                  <span th:if="${username == null}">&nbsp;</span>
                   <span sec:authorize="hasRole('USER')"> (Saldo: $<span th:text="${saldo}"></span>)</span>
-                </a>
+              </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/user/perfil">Perfil</a></li>
-                  <li><a class="dropdown-item" href="/user/saldo">Recargar Saldo</a></li>
+                  <li sec:authorize="hasRole('USER')">
+                    <a class="dropdown-item" href="/user/saldo">Recargar Saldo</a>
+                  </li>
+                  <li sec:authorize="hasRole('USER')">
+                    <a class="dropdown-item" href="/user/saldo">Retirar</a>
+                  </li>
                   <li>
                     <form action="/logout" method="post">
                       <button type="submit" class="dropdown-item">Logout</button>
@@ -58,10 +96,9 @@
               </li>
             </ul>
 
-
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0" sec:authorize="!isAuthenticated()">
               <li class="nav-item">
-                <a class="btn btn-outline-primary me-2" aria-current="page" href="/public/register">Register</a>
+                <a class="btn btn-outline-primary me-2" aria-current="page" href="/register">Register</a>
               </li>
               <li class="nav-item">
                 <a class="btn btn-primary" href="/login">Login</a>
@@ -70,6 +107,9 @@
           </div>
         </div>
       </nav>
+      
+      <main th:replace="${content}"> 
+      </main>
 
       <footer class="border-top bg-light text-muted text-center" th:fragment="page_footer">
         <div class="container pb-5">

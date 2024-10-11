@@ -23,8 +23,11 @@ public class RobotRequest {
     private String nombre;
 
     private int Victorias;
+    
     private int Derrotas;
+
     private boolean descalificado;
+
     @DecimalMin(value = "0.0", inclusive = false, message = "La altura debe ser mayor a 0")
     @DecimalMax(value = "40.0", message = "La altura no puede superar los 40 cm")
     private double altura;
