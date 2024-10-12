@@ -9,7 +9,14 @@
             <h1 class="text-center my-4" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Administración de Usuarios</h1>
 
             <form action="/data/buscar_usuarios" method="get" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
+                
+                
                 <div class="input-group mb-3">
+                    <select name="rol" class="form-select" aria-label="Selecciona el Rol" sec:authorize="hasRole('ADMIN')">
+                        <option value="USER_ROLE">Usuarios</option>
+                        <option value="MOD_ROLE">Moderadores</option>
+                    </select>
+
                     <select name="estado" class="form-select" aria-label="Selecciona el estado">
                         <option value="Habilitado">Habilitado</option>
                         <option value="Eliminado">Eliminado</option>

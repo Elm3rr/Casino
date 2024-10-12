@@ -81,9 +81,8 @@ public class PublicController {
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("user") PersonaRequest personaRequest, 
-    @RequestParam(value="ROL", defaultValue = "ROLE_USER") String Rol, 
-    BindingResult result, Model model) {
+    public String register(@Valid @ModelAttribute("user") PersonaRequest personaRequest, BindingResult result, 
+    @RequestParam(value="ROL", defaultValue = "ROLE_USER") String Rol, Model model) {
         
         if (!personaRequest.getPassword().equals(personaRequest.getConfirmPassword())) {
             result.addError(
@@ -110,17 +109,17 @@ public class PublicController {
         }
     
         if (result.hasErrors()) {
-            model.addAttribute("exito", false);
+            model.addAttribute("user", personaRequest);
             model.addAttribute("esEdicion", false);
             model.addAttribute("esAdmin", false);
-            model.addAttribute("editable", true);           
+            model.addAttribute("editable", true);
             return "register";
         }
     
         try {
             personaService.newUser(personaRequest, Rol, null);
-            model.addAttribute("exito", false);
             model.addAttribute("user", new PersonaRequest());
+            model.addAttribute("exito", true);
         } catch (Exception ex) {
             result.addError(new FieldError("user", "nombre", ex.getMessage()));
             model.addAttribute("exito", false);

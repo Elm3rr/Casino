@@ -62,10 +62,12 @@ public class UserController {
     public String show(Model model, Principal principal){
         PersonaRequest user = personaService.ActualData(principal.getName());
         model.addAttribute("user", user);
-        model.addAttribute("editable", false);
-        
-        return "register";
+        model.addAttribute("editable", false); // Solo visualización
+        model.addAttribute("esEdicion", false);
+        model.addAttribute("esAdmin", false);
+        return "register"; // O considera renombrar la vista
     }
+
     @GetMapping("/edit")
     public String editarDatos(Model model, Principal principal){
         PersonaRequest user = personaService.ActualData(principal.getName());
@@ -100,11 +102,12 @@ public class UserController {
     
         if (result.hasErrors()) {
             model.addAttribute("editable", true);
+            model.addAttribute("esEdicion", true);
             return "register";
         }
     
         try {
-            personaService.newUser(personaRequest, null, null);
+            personaService.newUser(personaRequest, personaRequest.getRol(), null);
             model.addAttribute("user", new PersonaRequest());
         } catch (Exception ex) {
             result.addError(

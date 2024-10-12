@@ -6,8 +6,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import com.Proyecto.Final.Entity.Usuario;
-import com.Proyecto.Final.Service.UserService;
+
+import com.Proyecto.Final.Entity.Persona;
+import com.Proyecto.Final.Service.PersonaService;
 
 import java.util.List;
 
@@ -16,17 +17,18 @@ import java.util.List;
 public class DataController {
 
     @Autowired
-    private UserService userService;
+    private PersonaService personaService;
 
     @GetMapping("/usuarios")
     public String usuarios(Model model,
     @RequestParam(value="estado", defaultValue="Habilitado") String estado,
+    @RequestParam(value="rol", defaultValue="ROLE_USER") String rol,
     @RequestParam(value="busqueda", required =false) String busqueda){
-        List<Usuario> usuarios;
+        List<Persona> usuarios;
         if(busqueda !=null && !busqueda.isEmpty()){
-            usuarios =  userService.Lista_busqueda(estado, busqueda);
+            usuarios = personaService.lista_busqueda_personas(rol, estado, busqueda);
         }else{
-            usuarios = userService.Lista_Usuarios(estado);
+            usuarios =  personaService.lista_personas(estado, busqueda);
         }
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("estado", estado);

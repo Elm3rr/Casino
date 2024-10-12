@@ -90,6 +90,7 @@ public class AdminController {
         }
     
         if (result.hasErrors()) {
+            model.addAttribute("user", personaRequest);
             model.addAttribute("editable", true);
             model.addAttribute("SelectRole", true);
             return "register";
