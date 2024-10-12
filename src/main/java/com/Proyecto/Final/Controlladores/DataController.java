@@ -4,12 +4,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Proyecto.Final.Entity.Persona;
 import com.Proyecto.Final.Service.PersonaService;
 
+import java.security.Principal;
 import java.util.List;
 
 @Controller
@@ -19,16 +21,47 @@ public class DataController {
     @Autowired
     private PersonaService personaService;
 
+    @PostMapping("/vetar_usuario")
+    public String eliminate(@RequestParam Long id, @RequestParam("motivo") String motivo, Principal principal){
+        try {
+            personaService.vetar_cuenta(id, motivo,principal);
+            return "redirect:/usuarios";
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+        return "redirect:/usuarios";
+    }
+
+    @GetMapping("/restaurar_usuario")
+    public String restaurar(@RequestParam Long id){
+        try {
+            personaService.restaurar_usuario(id);
+            return "redirect:/usuarios";
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+        return "redirect:/robots";
+    }
+
     @GetMapping("/usuarios")
     public String usuarios(Model model,
     @RequestParam(value="estado", defaultValue="Habilitado") String estado,
     @RequestParam(value="rol", defaultValue="ROLE_USER") String rol,
     @RequestParam(value="busqueda", required =false) String busqueda){
         List<Persona> usuarios;
-        if(busqueda !=null && !busqueda.isEmpty()){
-            usuarios = personaService.lista_busqueda_personas(rol, estado, busqueda);
+
+        if(estado.equals("Vetado")){
+            if(busqueda !=null && !busqueda.isEmpty()){
+                usuarios = personaService.lista_busqueda_vetados(rol, busqueda);
+            }else{
+                usuarios = personaService.lista_vetados(rol);
+            }
         }else{
-            usuarios =  personaService.lista_personas(estado, busqueda);
+            if(busqueda !=null && !busqueda.isEmpty()){
+                usuarios = personaService.lista_busqueda_personas(rol, estado, busqueda);
+            }else{
+                usuarios =  personaService.lista_personas(rol, estado);
+            }
         }
         model.addAttribute("usuarios", usuarios);
         model.addAttribute("estado", estado);

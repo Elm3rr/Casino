@@ -28,6 +28,8 @@ public interface PersonaRepository extends JpaRepository <Persona, Long> {
                                      @Param("estado2") String estado2,
                                      @Param("vetadoPorUsername") String vetadoPorUsername);
 
+    List<Persona> findByRoleAndEstadoOrderByFechaActualizacion(String rol, String estado);
 
+    List<Persona> findByRoleAndEstadoAndUsernameContainingOrRoleAndEstadoAndCuiContaining(String role, String estado, String busqueda, String role2, String estado2, String buqueda2);
 
 }

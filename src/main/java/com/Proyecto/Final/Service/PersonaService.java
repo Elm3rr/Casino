@@ -30,8 +30,16 @@ public class PersonaService {
         return personaRepository.findByRoleAndEstadoOrderByFechaCreacion(role, estado, PageRequest.of(0, 10));
     }
 
+    public List<Persona> lista_vetados(String role){
+        return personaRepository.findByRoleAndEstadoOrderByFechaActualizacion(role, "Vetado");
+    }
+
+    public List<Persona> lista_busqueda_vetados(String rol, String busqueda){
+        return personaRepository.filtrarPorUsernameVetador(rol, "Vetado", busqueda, rol, "Vetado", busqueda);
+    }
+
     public List<Persona> lista_busqueda_personas(String role, String estado, String busqueda){
-        return personaRepository.filtrarPorUsernameVetador(role, estado, busqueda, role, estado, busqueda);
+        return personaRepository.findByRoleAndEstadoAndUsernameContainingOrRoleAndEstadoAndCuiContaining(role, estado, busqueda, role, estado, busqueda);
     }
 
     //Logica de las Validaciones Específicas para la Creación de nuevos Usuarios
