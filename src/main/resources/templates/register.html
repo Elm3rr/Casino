@@ -2,141 +2,150 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
   <head th:replace="~{layout :: page_head(pageTitle='Registro')}"></head>
   <body>
+    <div class="wrapper">
+        <nav th:replace="~{layout :: page_navbar}"></nav>
+        <main th:fragment="content">
+            <h1>Datos</h1>
 
-    <div th:fragment="content">
-        <h1>Datos</h1>
-
-        <div class="container py-5">
-            <div class = "row">
-                <div class="cool-lg-6 mx-auto rounded border p-4">
-                    <h2 class="text-center mb-4">Register</h2>
-                <hr/>
-                    <div th:if="${exito}" class="alert alert-success alrt-dismisible fade show" role="alert">
-                        <strong>Cuenta creada correctamente! Ve a logearte</strong>
-                        <a class="ms-2" href="/login">Al Login</a>
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
-                    </div>
-                    
-                    <form th:action="${#strings.isEmpty(user.id) ? '/register' : '/user/edit'}" th:object="${user}" method="post">
+            <div class="container py-5">
+                <div class = "row">
+                    <div class="col-lg-6 mx-auto rounded border p-4">
+                        <h2 class="text-center mb-4">Register</h2>
                         
-                        <input type="hidden" th:field="${user.id}">
-
-                        <div class="row mb-3" th:if="${!#strings.isEmpty(user.id)}">
-                            <label class="col-sm-4 col-form-label">Codigo</label>
-                            <div class="col-sm-8">
-                                <input readonly class="form-control-plaintext" th:value="${user.id}">
-                            </div>
-                        </div>
-
-
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">Nombre*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.nombre}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('nombre')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{nombre}"></p>
-                            </div>
+                        <div th:if="${exito}" class="alert alert-success alrt-dismisible fade show" role="alert">
+                            <strong>Cuenta creada correctamente! Ve a logearte</strong>
+                            <a class="ms-2" href="/login">Al Login</a>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
                         </div>
                         
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">Apellido*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.apellido}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('apellido')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{apellido}"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">Email*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.email}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('email')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{email}"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">Confirma Email*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.confirmEmail}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('confirmEmail')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{confirmEmail}"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">CUI*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.cui}" th:attr="readonly=${user.id != null || !editable}">
-                                <p th:if="${#fields.hasErrors('cui')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{cui}"></p>
-                            </div>
-                        </div>
-                        
-                        <div class="row mb-3">
-                            <label class="col-sm-4 col-form-label">Nombre de Usuario*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.username}" th:attr="readonly=${user.id != null || !editable}">
-                                <p th:if="${#fields.hasErrors('username')}"
-                                   th:errorclass="text-danger"
-                                   th:errors="*{username}"></p>
-                            </div>
-                        </div>
-        
-                        <div class="row mb-3" th:if="${!editable}">
-                            <label class="col-sm-4 col-form-label">Contraseña*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" type="text" value="********" readonly>
-                                <small class="form-text text-muted">No puedes ver tu contraseña.</small>
-                            </div>
-                        </div>
+                        <form th:action="@{${actionUrl}}" method="post">
+                            
+                            <input type="hidden" th:field="${user.id}">
 
-                        <div class="row mb-3" th:if="${editable}">
-                            <label class="col-sm-4 col-form-label">Contraseña*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.password}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('password')}"
-                                th:errorclass="text-danger"
-                                th:errors="*{password}"></p>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3" th:if="${editable}">
-                            <label class="col-sm-4 col-form-label">Confirma Contraseña*</label>
-                            <div class="col-sm-8">
-                                <input class="form-control" th:field="${user.confirmPassword}" th:attr="readonly=${!editable}">
-                                <p th:if="${#fields.hasErrors('confirmPassword')}"
-                                th:errorclass="text-danger"
-                                th:errors="*{confirmPassword}"></p>
-                            </div>
-                        </div>
-
-                        <div class="row mb-3">
-                            <!-- Botón de Submit, solo aparece en el modo de creación -->
-                            <div class="offset-sm-4 col-sm-4 d-grid" th:if="${user.id == null || editable}">
-                                <button type="submit" class="btn btn-primary">Submit</button>
-                            </div>
-                        
-                            <!-- Botón de Editar, solo aparece en el modo de visualización del perfil -->
-                                <div class="offset-sm-4 col-sm-4 d-grid" th:if="${user.id != null} and ${!editable}">
-                                    <a class="btn btn-primary btn-sm" th:href="@{/user/edit}">Editar</a>
+                            <div class="row mb-3" th:if="${!#strings.isEmpty(user.id)}">
+                                <label class="col-sm-4 col-form-label">Codigo</label>
+                                <div class="col-sm-8">
+                                    <input readonly class="form-control-plaintext" th:value="${user.id}">
                                 </div>
-                        
-                            <!-- Botón de Cancelar, aparece en todos los modos -->
-                            <div class="col-sm-4 d-grid">
-                                <a href="/home" class="btn btn-outline-primary">Cancel</a>
                             </div>
-                        </div>
-                    </form>
+
+                            <div th:if="${esAdmin}">
+                                <label for="rol">Selecciona el rol:</label>
+                                <select th:field="*{rol}" id="rol">
+                                    <option value="ROLE_USER">Usuario</option>
+                                    <option value="ROLE_MOD">Moderador</option>
+                                </select>
+                            </div>
+
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">Nombre*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.nombre}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('nombre')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{nombre}"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">Apellido*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.apellido}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('apellido')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{apellido}"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">Email*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.email}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('email')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{email}"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">Confirma Email*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.confirmEmail}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('confirmEmail')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{confirmEmail}"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">CUI*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.cui}" th:attr="readonly=${user.id != null || !editable}">
+                                    <p th:if="${#fields.hasErrors('cui')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{cui}"></p>
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <label class="col-sm-4 col-form-label">Nombre de Usuario*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.username}" th:attr="readonly=${user.id != null || !editable}">
+                                    <p th:if="${#fields.hasErrors('username')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{username}"></p>
+                                </div>
+                            </div>
+            
+                            <div class="row mb-3" th:if="${!editable}">
+                                <label class="col-sm-4 col-form-label">Contraseña*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" type="text" value="********" readonly>
+                                    <small class="form-text text-muted">No puedes ver tu contraseña.</small>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3" th:if="${editable}">
+                                <label class="col-sm-4 col-form-label">Contraseña*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.password}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('password')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{password}"></p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3" th:if="${editable}">
+                                <label class="col-sm-4 col-form-label">Confirma Contraseña*</label>
+                                <div class="col-sm-8">
+                                    <input class="form-control" th:field="${user.confirmPassword}" th:attr="readonly=${!editable}">
+                                    <p th:if="${#fields.hasErrors('confirmPassword')}"
+                                    th:errorclass="text-danger"
+                                    th:errors="*{confirmPassword}"></p>
+                                </div>
+                            </div>
+
+                            <div class="row mb-3">
+                                <!-- Botón de Submit, solo aparece en el modo de creación -->
+                                <div class="offset-sm-4 col-sm-4 d-grid" th:if="${user.id == null || editable}">
+                                    <button type="submit" class="btn btn-primary">Submit</button>
+                                </div>
+                            
+                                <!-- Botón de Editar, solo aparece en el modo de visualización del perfil -->
+                                    <div class="offset-sm-4 col-sm-4 d-grid" th:if="${user.id != null} and ${!editable}">
+                                        <a class="btn btn-primary btn-sm" th:href="@{/user/edit}">Editar</a>
+                                    </div>
+                            
+                                <!-- Botón de Cancelar, aparece en todos los modos -->
+                                <div class="col-sm-4 d-grid">
+                                    <a href="/home" class="btn btn-outline-primary">Cancel</a>
+                                </div>
+                            </div>
+                        </form>
+                    </div>    
                 </div>    
-            </div>    
-        </div>
+            </div>
+        </main>
     </div>
     <footer th:replace="~{layout :: page_footer}"></footer>
   </body>

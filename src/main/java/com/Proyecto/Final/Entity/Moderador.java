@@ -19,7 +19,7 @@ public class Moderador extends Persona{
     @JoinColumn(name = "administrador_id")
     private Administrador vetadoporAdministrador;
     //Usuarios que fueron suspendidos por el moderador
-    @OneToMany(mappedBy = "eliminadoPor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vetadoPor", cascade = CascadeType.ALL)
     private List<Usuario> usuariosSuspendidos;
 
     //Registro de robots y combates creados por el moderador
@@ -30,10 +30,10 @@ public class Moderador extends Persona{
     private List<Combate> combatesCreados;
 
     //Registro de robots y combates eliminados por el moderador
-    @OneToMany(mappedBy = "eliminadoRobot", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "RobotEliminadoPor", cascade = CascadeType.ALL)
     private List<Robot> robotsEliminados;
 
-    @OneToMany(mappedBy = "eliminadoCombate", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "CombateEliminadoPor", cascade = CascadeType.ALL)
     private List<Combate> combatesEliminados;
 
     //Administrador quien lo creo

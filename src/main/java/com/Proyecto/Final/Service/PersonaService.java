@@ -106,7 +106,8 @@ public class PersonaService {
     }
 
     //Logica para crear y actualizar (USUARIO, MOD Y ADMINISTRADOR)
-    public PersonaRequest ActualData(Persona persona){
+    public PersonaRequest ActualData(String username){
+        Persona persona = personaRepository.findByUsername(username).get();
         PersonaRequest user = new PersonaRequest();
         user.setId(persona.getId());
         user.setNombre(persona.getNombre());

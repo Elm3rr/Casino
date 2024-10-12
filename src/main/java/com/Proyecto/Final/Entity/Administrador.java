@@ -12,7 +12,7 @@ public class Administrador extends Persona {
     @OneToMany(mappedBy = "vetadoporAdministrador", cascade = CascadeType.ALL)
     private List<Moderador> moderadoresSuspendidos;
 
-    @OneToMany(mappedBy = "eliminadoPor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "vetadoPor", cascade = CascadeType.ALL)
     private List<Usuario> usuariosSuspendidos;
 
     //Autorizaciones y creaciones

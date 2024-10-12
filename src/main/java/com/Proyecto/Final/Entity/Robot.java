@@ -53,7 +53,7 @@ public class Robot {
     private Persona creadoPor;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_dlt_id")
     private Persona RobotEliminadoPor;
 
     @ElementCollection

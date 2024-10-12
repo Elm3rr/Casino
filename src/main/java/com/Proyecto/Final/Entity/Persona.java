@@ -64,7 +64,7 @@ public abstract class Persona {
 
     @ManyToOne
     @JoinColumn(name = "persona_id")
-    private Persona VetadoPor;
+    private Persona vetadoPor;
 
     public void setEliminadoVetado(boolean eliminadoVetado) {
         this.eliminadoVetado = eliminadoVetado;

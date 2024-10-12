@@ -17,9 +17,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
 import com.Proyecto.Final.Entity.Combate;
-import com.Proyecto.Final.Entity.Persona;
 import com.Proyecto.Final.Service.CombateService;
-import com.Proyecto.Final.Service.UserService;
+import com.Proyecto.Final.Service.PersonaService;
 
 import jakarta.validation.Valid;
 
@@ -31,12 +30,12 @@ public class UserController {
     private CombateService combateService;
 
     @Autowired
-    private UserService userService;
+    private PersonaService personaService;
 
     @GetMapping("/eliminacion")
     public String eliminar_cuenta(Principal principal, RedirectAttributes redirectAttributes){
         try {
-            userService.eliminar_cuenta(principal);
+            personaService.eliminar_cuenta(principal);
             redirectAttributes.addFlashAttribute("mensaje", "Cuenta eliminada exitosamente.");
             return "redirect:/login"; 
         } catch (Exception ex) {
@@ -61,20 +60,20 @@ public class UserController {
 
     @GetMapping("/perfil")
     public String show(Model model, Principal principal){
-        String username = principal.getName();
-        Persona persona = userService.findByUsername(username);
-        PersonaRequest user = userService.ActualData(persona);
+        PersonaRequest user = personaService.ActualData(principal.getName());
         model.addAttribute("user", user);
         model.addAttribute("editable", false);
+        
         return "register";
     }
     @GetMapping("/edit")
     public String editarDatos(Model model, Principal principal){
-        String username = principal.getName();
-        Persona persona = userService.findByUsername(username);
-        PersonaRequest user = userService.ActualData(persona);
+        PersonaRequest user = personaService.ActualData(principal.getName());
         model.addAttribute("user", user);
         model.addAttribute("editable", true);
+        model.addAttribute("esEdicion", true);
+        model.addAttribute("exito", false);
+        model.addAttribute("esAdmin", false);
         return "register";
     }
 
@@ -87,13 +86,13 @@ public class UserController {
             );
         }
     
-        if (userService.email_ocupado(personaRequest.getEmail()) && !userService.DueñoUsername(personaRequest.getUsername(), personaRequest.getId())) {
+        if (personaService.email_ocupado(personaRequest.getEmail()) && !personaService.DueñoUsername(personaRequest.getUsername(), personaRequest.getId())) {
             result.addError(
                 new FieldError("user", "email", "Correo ya utilizado")
             );
         }
     
-        if (userService.CUI_ocupado(personaRequest.getCui()) && !userService.DueñoCUI(personaRequest.getCui(), personaRequest.getId())) {
+        if (personaService.CUI_ocupado(personaRequest.getCui()) && !personaService.DueñoCUI(personaRequest.getCui(), personaRequest.getId())) {
             result.addError(
                 new FieldError("user", "cui", "CUI ya utilizado")
             );
@@ -105,9 +104,8 @@ public class UserController {
         }
     
         try {
-            userService.saveUser(personaRequest);
+            personaService.newUser(personaRequest, null, null);
             model.addAttribute("user", new PersonaRequest());
-            model.addAttribute("exito", true);
         } catch (Exception ex) {
             result.addError(
                 new FieldError("user", "nombre", ex.getMessage())

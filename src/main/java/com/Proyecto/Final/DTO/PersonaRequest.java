@@ -35,6 +35,8 @@ public class PersonaRequest {
     @Size(min = 5, max=15, message = "El nombre de usuario debe tener una longitud entre 5 y 15 caracteres")
     private String username;
 
+    private String rol;
+
     @NotBlank(message = "La contraseña no puede estar vacía")
     @Size(min = 8, message = "La contraseña debe de tener minimo 8 caracteres")
     private String password;

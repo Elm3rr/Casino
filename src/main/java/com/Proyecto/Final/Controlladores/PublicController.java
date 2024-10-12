@@ -27,6 +27,9 @@ public class PublicController {
     private UserService userService;
 
     @Autowired
+    private PersonaService personaService;
+
+    @Autowired
     private RobotService robotService;
 
     @GetMapping("/login")
@@ -68,15 +71,19 @@ public class PublicController {
 
     @GetMapping("/register")
     public String register(Model model){
-        PersonaRequest user = new PersonaRequest();
-        model.addAttribute("user",user);
+        model.addAttribute("user",new PersonaRequest());
         model.addAttribute("exito", false);
+        model.addAttribute("esEdicion", false);
+        model.addAttribute("esAdmin", false);
         model.addAttribute("editable", true);
+
         return "register";
     }
 
     @PostMapping("/register")
-    public String register(@Valid @ModelAttribute("user") PersonaRequest personaRequest, BindingResult result, Model model) {
+    public String register(@Valid @ModelAttribute("user") PersonaRequest personaRequest, 
+    @RequestParam(value="ROL", defaultValue = "ROLE_USER") String Rol, 
+    BindingResult result, Model model) {
         
         if (!personaRequest.getPassword().equals(personaRequest.getConfirmPassword())) {
             result.addError(
@@ -84,40 +91,45 @@ public class PublicController {
             );
         }
     
-        if (userService.username_ocupado(personaRequest.getUsername())) {
+        if (personaService.username_ocupado(personaRequest.getUsername())) {
             result.addError(
                 new FieldError("user", "username", "Nombre de usuario ya tomado, elegí otro")
             );
         }
     
-        if (userService.email_ocupado(personaRequest.getEmail())) {
+        if (personaService.email_ocupado(personaRequest.getEmail())) {
             result.addError(
                 new FieldError("user", "email", "Correo ya utilizado")
             );
         }
     
-        if (userService.CUI_ocupado(personaRequest.getCui())) {
+        if (personaService.CUI_ocupado(personaRequest.getCui())) {
             result.addError(
                 new FieldError("user", "cui", "CUI ya utilizado")
             );
         }
     
         if (result.hasErrors()) {
-            model.addAttribute("editable", true);
+            model.addAttribute("exito", false);
+            model.addAttribute("esEdicion", false);
+            model.addAttribute("esAdmin", false);
+            model.addAttribute("editable", true);           
             return "register";
         }
     
         try {
-            userService.saveUser(personaRequest);
+            personaService.newUser(personaRequest, Rol, null);
+            model.addAttribute("exito", false);
             model.addAttribute("user", new PersonaRequest());
-            model.addAttribute("exito", true);
-            model.addAttribute("editable", true);
         } catch (Exception ex) {
-            result.addError(
-                new FieldError("user", "nombre", ex.getMessage())
-            );
+            result.addError(new FieldError("user", "nombre", ex.getMessage()));
+            model.addAttribute("exito", false);
         }
-    
+        
+        model.addAttribute("esEdicion", false);
+        model.addAttribute("esAdmin", false);
+        model.addAttribute("editable", true);
+
         return "register";
     }
     

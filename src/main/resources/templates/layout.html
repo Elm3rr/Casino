@@ -70,6 +70,10 @@
               <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                 <a class="nav-link text-dark" href="/admin/usuarios">Auditoria</a>
               </li>
+
+              <li class="nav-item" sec:authorize="hasRole('ADMIN')">
+                <a class="nav-link text-dark" href="/admin/staff">Auditoria</a>
+              </li>
             </ul>
             
             <ul class="navbar-nav me-3" sec:authorize="isAuthenticated()">
