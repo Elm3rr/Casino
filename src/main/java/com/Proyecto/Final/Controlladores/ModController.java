@@ -6,6 +6,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/mod")
 public class ModController {
-    //Hacer el GetMapping de Usuarios
     
 }

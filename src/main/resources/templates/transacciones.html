@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
+  <head th:replace="~{layout :: page_head(pageTitle='TRANSACCIONES')}"></head>
+  <body>
+    <div class="wrapper">
+      <nav th:replace="~{layout :: page_navbar}"></nav>
+        
+      <main th:fragment="content">
+
+        <form action="${#authorization.expression('hasRole(''ADMIN'')') ? '/data/transactions' : '/user/myTransactions'}" method="get" sec:authorize="hasAnyRole('ADMIN', 'USER')">
+            <div class="input-group mb-3">
+
+                <select name="tipo" class="form-select" aria-label="Selecciona el Tipo de Transaccion">
+                    <option value="Recarga">Recarga</option>
+                    <option value="Retiro">Retiro</option>
+                </select>
+
+                <select name="estado" class="form-select" aria-label="Selecciona el estado">
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Aprobada">Rechazada</option>
+                    <option value="Rechazada">Aprobada</option>
+                </select>
+
+                <input sec:authorize="hasRole('ADMIN')" type="text" name="busqueda" class="form-control" placeholder="Buscar por nombre de Usuario para ver sus Transacciones" aria-label="Buscar">
+                
+                <input type="date" name="fechaInicio" class="form-control" placeholder="Fecha de inicio" aria-label="Fecha de inicio">
+
+                <input type="date" name="fechaFin" class="form-control" placeholder="Fecha de fin" aria-label="Fecha de fin">
+
+                <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+            </div>
+        </form>
+
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>FECHA DE SOLICITUD</th>
+                    <th th:if="${estado!='Pendiente'}">FECHA DE REVISION</th>
+                    <th th:if="${estado == 'Aprobada' || tipo == 'Recarga'}">N. BOLETA</th>
+                    <th>ESTADO</th>
+                    <th th:if="${estado == 'Rechazada'}">MOTIVO DE RECHAZO</th>
+                    <th th:if="${estado == 'Aprobada' || tipo == 'Recarga'}">BOLETA</th>
+                    <th sec:authorize="hasRole('ADMIN')" 
+                        th:if="${estado == 'Pendiente'}">
+                        OPCIONES
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="transaccion : ${transacciones}">
+                    <td th:text="${transaccion.fechaCreacion.toString().substring(0,10)}"></td>
+                    <td th:if="${estado!='Pendiente'}" th:text="${transaccion.fechaActualizacion.toString().substring(0,10)}"></td>
+                    <td th:if="${estado == 'Aprobada' || tipo == 'Recarga'}" th:text="${transaccion.numBoleta}"></td>
+                    <td th:text="${transaccion.estado}"></td>
+                    <td th:if="${estado == 'Rechazada'}" th:text="${transaccion.motivoRechazo}"></td>
+                    <td>
+                        <img th:if="${estado == 'Aprobada' || tipo == 'Recarga'}" th:src="@{'/images/' + ${transaccion.imagenBoleta}}" alt="Boleta Image" width="100">
+                    </td>
+                    <td style="white-space:nowrap" 
+                        sec:authorize="hasRole('ADMIN')">
+                        <!-- Botón Editar -->
+                        <div th:if="${estado == 'Pendiente'}">
+                            <a class="btn btn-primary btn-sm" 
+                            th:href="@{/admin/aproveTransaction(id=${robot.id})}">Editar</a>
+                            
+                            <!-- Botón Eliminar que abre el modal -->
+                            <button type="button" class="btn btn-danger btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    th:data-bs-target="'#modalRechazar' + ${transaccion.id}">Eliminar</button>
+                        </div>
+
+                        <!-- Modal para confirmar eliminación y agregar motivo -->
+                        <div th:id="'modalRechazar' + ${transaccion.id}" class="modal fade" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Motivo de Rechazo</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <form th:action="@{/admin/declineTransaction(id=${transaccion.id})}" method="post">
+                                        <div class="modal-body">
+                                            <div class="mb-3">
+                                                <label for="motivo" class="form-label">Motivo:</label>
+                                                <input type="text" name="motivo" placeholder="Ingresa el motivo" class="form-control" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                            <button type="submit" class="btn btn-danger">Confirmar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+      </main>
+
+      <footer th:replace="~{layout :: page_footer}"></footer>
+    </div>
+  </body>
+</html>

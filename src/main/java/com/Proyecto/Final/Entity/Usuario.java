@@ -21,6 +21,9 @@ public class Usuario extends Persona {
     @OneToMany(mappedBy="usuario", cascade=CascadeType.ALL, orphanRemoval = true)
     private List<Apuesta> historialApuestas;
 
+    @OneToMany(mappedBy="solicitadoPor", cascade=CascadeType.ALL)
+    private List<Transaccion> transaccionesSolicitadas;
+
     private Date fechaUltimaApuesta;
 
     private Double totalGanancias;

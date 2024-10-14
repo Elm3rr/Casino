@@ -149,18 +149,18 @@ public class PersonaService {
     
         if (personaRequest.getId() == null) {
             switch (ROL) {
-                case "moderador":
+                case "ROLE_MOD":
                     persona = new Moderador();
                     persona.setRole(ROL);
                     if (creador != null) { // Solo establece el creador si fue encontrado
                         ((Moderador) persona).setModeradorcreadoPor(creador);
                     }
                     break;
-                case "administrador":
+                case "ROLE_ADMIN":
                     persona = new Administrador();
                     persona.setRole(ROL);
                     break;
-                case "usuario":
+                case "ROLE_USER":
                 default:
                     persona = new Usuario();
                     persona.setRole(ROL);

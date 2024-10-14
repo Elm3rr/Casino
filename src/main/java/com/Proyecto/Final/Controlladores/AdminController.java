@@ -1,7 +1,6 @@
 package com.Proyecto.Final.Controlladores;
 
 import java.security.Principal;
-import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
-import com.Proyecto.Final.Entity.Moderador;
 import com.Proyecto.Final.Service.ModService;
 import com.Proyecto.Final.Service.PersonaService;
 
@@ -33,24 +31,7 @@ public class AdminController {
     @Autowired
     PersonaService personaService;
 
-    @GetMapping("/staff")
-    public String staff(Model model,
-    @RequestParam(value="estado", defaultValue = "Habilitado") String estado,
-    @RequestParam(value="busqueda", required=false) String busqueda){
-        List<Moderador> moderadores;
-        if( busqueda !=null && !busqueda.isEmpty()){
-            moderadores = modService.buscar_mods(estado, busqueda);
-        }else{
-            moderadores = modService.lista_mod(estado);
-        }
-        model.addAttribute("estado", estado);
-        model.addAttribute("moderadores", moderadores);
-
-        return "moderadores";
-    }
-
-    
-    @GetMapping("/registerStaff")
+    @GetMapping("/registerUsers")
     public String register(Model model){
         PersonaRequest user = new PersonaRequest();
         model.addAttribute("user",user);
@@ -60,7 +41,7 @@ public class AdminController {
         return "register";
     }
 
-    @PostMapping("/registerStaff")
+    @PostMapping("/registerUsers")
     public String confirm(@Valid @ModelAttribute("user") PersonaRequest personaRequest, 
     @RequestParam(value="ROL", defaultValue = "ROLE_USER") String Rol, 
     BindingResult result, Model model, Principal principal){

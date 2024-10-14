@@ -20,10 +20,10 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/admin/**", "/transaccion/**", "/auditoria/**").hasRole("ADMIN")
+                .requestMatchers("/admin/**", "/auditoria/**").hasRole("ADMIN")
                 .requestMatchers( "/robot/**", "/combate/**", "/mod/**", "/data/**").hasAnyRole("ADMIN", "MOD")
                 .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MOD")
-                .requestMatchers("/saldo/**").hasRole("USER")
+                .requestMatchers("/transaccion/**").hasRole("USER")
                 .requestMatchers("**", "/images/**", "/css/**", "/js/**").permitAll()
                 .anyRequest().authenticated()
             )

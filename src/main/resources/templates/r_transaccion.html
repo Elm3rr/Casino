@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Formulario de Recarga</title>
+
+    <!-- Enlace a Bootstrap CDN -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
+</head>
+
+
+<body>
+    <!-- Enlace a Bootstrap CDN -->
+
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8 mx-auto rounded border p-4 m-4">
+                <h2 class="text-center mb-5" th:text="${(request.getTipo()=='Recarga') ? 'Recarga' : 'Retiro'}"></h2>
+                <form action="#" method="post" enctype="multipart/form-data" th:object="${request}">
+                    
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Monto a Solicitar*</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="number" th:field="*{monto}">
+                            <p th:if="${#fields.hasErrors('monto')}"
+                            th:errorclass="text-danger"
+                            th:errors="*{monto}"></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" th:if="${request.getTipo()=='Recarga'}">
+                        <label class="col-sm-4 col-form-label">Numero de la Boleta*</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" th:field="*{numBoleta}">
+                            <p th:if="${#fields.hasErrors('numBoleta')}"
+                            th:errorclass="text-danger"
+                            th:errors="*{numBoleta}"></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" th:if="${request.getTipo()=='Recarga'}">
+                        <label class="col-sm-4 col-form-label">Fecha de Deposito</label>
+                        <div class="col-sm-8">
+                            <input type="date" class="form-control" th:field="*{fechaBoleta}">
+                            <p th:if="${#fields.hasErrors('fechaBoleta')}" 
+                            th:errorclass="text-danger" 
+                            th:errors="*{fechaBoleta}"></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Banco*</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" th:field="*{Banco}">
+                            <p th:if="${#fields.hasErrors('Banco')}"
+                            th:errorclass="text-danger"
+                            th:errors="*{Banco}"></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" th:if="${request.getTipo()=='Retiro'}">
+                        <label class="col-sm-4 col-form-label">Cuenta de Banco*</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" th:field="*{ctaBanco}">
+                            <p th:if="${#fields.hasErrors('ctaBanco')}"
+                            th:errorclass="text-danger"
+                            th:errors="*{ctaBanco}"></p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3" th:if="${request.getTipo()=='Recarga'}">
+                        <label class="col-sm-4 col-form-label">Imagen</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="file" th:field="*{image}">
+                            <p th:if="${#fields.hasErrors('image')}" th:errorclass="text-danger" 
+                            th:errors="*{image}"></p>
+                        </div>
+                    </div>
+
+
+                    <div class="row">
+                        <div class="offset-sm-4 col-sm-4 d-grid">
+                            <button type="submit" class="btn btn-primary">Guardar</button>
+                        </div>
+                        <div class="col-sm-4 d-grid">
+                            <a class="btn btn-outline-primary" href="/" role="button">Cancelar</a>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS, Popper.js, and jQuery -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
