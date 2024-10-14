@@ -11,16 +11,16 @@ import com.Proyecto.Final.Entity.Usuario;
 
 public interface TransactionRepository extends JpaRepository <Transaccion, Long> {
     //Listas para los historiales de usuario
-    List<Transaccion> findByUsuarioAndTipoAndEstadoOrderByFechaActualizacion(Usuario usuario, String tipo, String estado, Pageable pageable);
+    List<Transaccion> findBySolicitadoPorAndTipoAndEstadoOrderByFechaActualizacion(Usuario usuario, String tipo, String estado, Pageable pageable);
 
-    List<Transaccion> findByUsuarioAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(Usuario usuario, String tipo, String estado, Date fechaInicio, Date fechaFin);
+    List<Transaccion> findBySolicitadoPorAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(Usuario usuario, String tipo, String estado, Date fechaInicio, Date fechaFin);
 
     //Listas para los historiales de administrador
     List<Transaccion>findByTipoAndEstadoOrderByFechaActualizacion(String tipo, String estado, Pageable pageable);
 
-    List<Transaccion> findByUsuarioUsernameAndTipoAndEstadoOrderByFechaActualizacion(String username, String tipo, String estado, Pageable pageable);
+    List<Transaccion> findBySolicitadoPorUsernameAndTipoAndEstadoOrderByFechaActualizacion(String username, String tipo, String estado, Pageable pageable);
     
     List<Transaccion> findByTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(String tipo, String estado, Date fechaInicio, Date fechaFin);
 
-    List<Transaccion> findByUsuarioUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(String username, String tipo, String estado, Date fechaInicio, Date fechaFin);
+    List<Transaccion> findBySolicitadoPorUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(String username, String tipo, String estado, Date fechaInicio, Date fechaFin);
 }

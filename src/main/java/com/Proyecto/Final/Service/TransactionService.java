@@ -80,15 +80,15 @@ public class TransactionService {
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if(fechaInicio==null||fechaFin==null){
-            return transactionRepository.findByUsuarioAndTipoAndEstadoOrderByFechaActualizacion(usuario, tipo, estado, PageRequest.of(0, 10));
+            return transactionRepository.findBySolicitadoPorAndTipoAndEstadoOrderByFechaActualizacion(usuario, tipo, estado, PageRequest.of(0, 10));
         }else{
-            return transactionRepository.findByUsuarioAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(usuario, tipo, estado, fechaInicio, fechaFin);
+            return transactionRepository.findBySolicitadoPorAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(usuario, tipo, estado, fechaInicio, fechaFin);
         }
     }
 
     public List<Transaccion> getTransaccionesAdmin(String tipo, String estado, String username, Date fechaInicio, Date fechaFin){
         if(username !=null && fechaInicio != null && fechaFin != null){
-            return transactionRepository.findByUsuarioUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(username, tipo, estado, fechaInicio, fechaFin);
+            return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(username, tipo, estado, fechaInicio, fechaFin);
         }
 
         if (fechaInicio != null && fechaFin != null){
@@ -96,7 +96,7 @@ public class TransactionService {
         }
 
         if(username!=null){
-            return transactionRepository.findByUsuarioUsernameAndTipoAndEstadoOrderByFechaActualizacion(username, tipo, estado,PageRequest.of(0, 10));
+            return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoOrderByFechaActualizacion(username, tipo, estado,PageRequest.of(0, 10));
         }
         
         return transactionRepository.findByTipoAndEstadoOrderByFechaActualizacion(tipo, estado, PageRequest.of(0, 10));

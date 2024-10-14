@@ -2,6 +2,7 @@ package com.Proyecto.Final.DTO;
 
 import java.util.Date;
 
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.constraints.DecimalMin;
@@ -24,17 +25,16 @@ public class TransaccionRequest {
     @DecimalMin(value = "100.00", inclusive = true, message = "El monto debe ser mayor a 100")
     private Double monto;
 
-    @NotNull(message = "La fecha de la boleta es obligatoria")
     @PastOrPresent(message = "La fecha de la boleta debe ser de hoy o días anteriores")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date fechaBoleta;
 
-    @NotNull(message = "La imagen no debe estar en blanco")
     private MultipartFile image;
 
-    @NotNull(message = "El numero de cuenta no puede ir vacio")
+    @NotBlank(message = "El numero de cuenta no puede ir vacio")
     private String ctaBanco;
 
-    @NotNull(message = "El banco es obligatorio")
+    @NotBlank(message = "El banco es obligatorio")
     private String Banco;
     
     private String tipo;

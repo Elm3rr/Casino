@@ -159,6 +159,7 @@ public class UserController {
     public String process(@Valid @ModelAttribute("request") TransaccionRequest transaccionRequest,
     BindingResult result, Model model, Principal principal){
         if(result.hasErrors()){
+            model.addAttribute("request", transaccionRequest);
             return "r_transaccion";
         }try {
             String nombreImagen = imagenService.buildImage(transaccionRequest.getImage());
@@ -167,6 +168,7 @@ public class UserController {
             model.addAttribute("request", new TransaccionRequest());
         } catch (Exception ex) {
             System.out.println("Error: " + ex.getMessage());
+            model.addAttribute("request", transaccionRequest);
             return "r_transaccion";
         }
         return "r_transaccion";
