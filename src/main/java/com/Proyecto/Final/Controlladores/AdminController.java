@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
+import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.ModService;
 import com.Proyecto.Final.Service.PersonaService;
+import com.Proyecto.Final.Service.TransactionService;
 
 import jakarta.validation.Valid;
 
@@ -30,6 +33,12 @@ public class AdminController {
     
     @Autowired
     PersonaService personaService;
+
+    @Autowired
+    TransactionService transactionService;
+
+    @Autowired
+    ImagenService imagenService;
 
     @GetMapping("/registerUsers")
     public String register(Model model){
@@ -88,6 +97,36 @@ public class AdminController {
             );
         }    
         return "register";
+    }
+
+    //Logica para vetar usuarios
+    @PostMapping("/declineTransaction")
+    public String decline(@RequestParam Long id, @RequestParam("motivo") String motivo){
+        try {
+            transactionService.rechazar_transaccion(id, motivo);
+            return "redirect:/usuarios";
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+        return "redirect:/data/transactions";
+    }
+    //Logica para restaurar usuarios (solo admins)
+    //Mover a admincontroller
+    @PostMapping("/approveTransaction")
+    public String aprove(@RequestParam Long id, 
+    @RequestParam(required = false) MultipartFile imagenBoleta,
+    Principal principal){
+        try {
+            String nombreImagen = null;
+            if(imagenBoleta != null && !imagenBoleta.isEmpty()){
+                nombreImagen = imagenService.buildImage(imagenBoleta);
+            }
+            transactionService.aprobar_transaccion(id, nombreImagen, principal);
+            return "redirect:/data/transactions";
+        } catch (Exception ex) {
+            System.out.println("Exception: " + ex.getMessage());
+        }
+        return "redirect:/data/transactions";
     }
 
 

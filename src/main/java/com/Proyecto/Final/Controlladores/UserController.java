@@ -158,11 +158,15 @@ public class UserController {
     @PostMapping("/processTransaction")
     public String process(@Valid @ModelAttribute("request") TransaccionRequest transaccionRequest,
     BindingResult result, Model model, Principal principal){
+
         if(result.hasErrors()){
             model.addAttribute("request", transaccionRequest);
             return "r_transaccion";
         }try {
-            String nombreImagen = imagenService.buildImage(transaccionRequest.getImage());
+            String nombreImagen = null;
+            if(transaccionRequest.getTipo().equals("Recarga")){
+                nombreImagen = imagenService.buildImage(transaccionRequest.getImage());
+            }
             transactionService.saveTransaction(transaccionRequest,nombreImagen,principal);
             model.addAttribute("exito", true);
             model.addAttribute("request", new TransaccionRequest());
@@ -187,7 +191,8 @@ public class UserController {
         List<Transaccion> transacciones = transactionService.getTransaccionesUser(principal, tipo, estado, fechaInicio, fechaFin);
 
         model.addAttribute("transacciones", transacciones);
-
+        model.addAttribute("tipo", tipo);
+        model.addAttribute("estado", estado);
         return "Transacciones";
     }
 

@@ -81,7 +81,7 @@
                 <a class="nav-link dropdown-toggle text-dark" href="#" role="button" data-bs-toggle="dropdown">
                   <span th:if="${username != null}" th:text="${username}"></span>
                   <span th:if="${username == null}">&nbsp;</span>
-                  <span sec:authorize="hasRole('USER')"> (Saldo: $<span th:text="${saldo}"></span>)</span>
+                  <span sec:authorize="hasRole('USER')"> (Saldo: $<span th:text="${Saldo}"></span>)</span>
               </a>
                 <ul class="dropdown-menu">
                   <li><a class="dropdown-item" href="/user/perfil">Perfil</a></li>

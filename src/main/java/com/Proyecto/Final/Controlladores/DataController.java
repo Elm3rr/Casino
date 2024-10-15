@@ -88,11 +88,12 @@ public class DataController {
     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
     @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin){
 
-        List<Transaccion> transacciones = transactionService.getTransaccionesAdmin(busqueda, tipo, estado, fechaInicio, fechaFin);
+        List<Transaccion> transacciones = transactionService.getTransaccionesAdmin(tipo, estado, busqueda, fechaInicio, fechaFin);
 
         model.addAttribute("transacciones", transacciones);
-
-        return "Transacciones";
+        model.addAttribute("tipo", tipo);
+        model.addAttribute("estado", estado);
+        return "transacciones";
     }
     
 }

@@ -86,23 +86,22 @@ public class TransactionService {
         }
     }
 
-    public List<Transaccion> getTransaccionesAdmin(String tipo, String estado, String username, Date fechaInicio, Date fechaFin){
-        if(username !=null && fechaInicio != null && fechaFin != null){
-            return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(username, tipo, estado, fechaInicio, fechaFin);
+    public List<Transaccion> getTransaccionesAdmin(String tipo, String estado, String username, Date fechaInicio, Date fechaFin) {
+        if (username != null && !username.isEmpty()) {
+            if (fechaInicio != null && fechaFin != null) {
+                return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(
+                    username, tipo, estado, fechaInicio, fechaFin);
+            }
+            return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoOrderByFechaActualizacion(username, tipo, estado, PageRequest.of(0, 10));
         }
-
-        if (fechaInicio != null && fechaFin != null){
+    
+        if (fechaInicio != null && fechaFin != null) {
             return transactionRepository.findByTipoAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(tipo, estado, fechaInicio, fechaFin);
         }
-
-        if(username!=null){
-            return transactionRepository.findBySolicitadoPorUsernameAndTipoAndEstadoOrderByFechaActualizacion(username, tipo, estado,PageRequest.of(0, 10));
-        }
-        
+    
         return transactionRepository.findByTipoAndEstadoOrderByFechaActualizacion(tipo, estado, PageRequest.of(0, 10));
     }
-
-
+    
     //Logica para guardar nuevas transacciones
     public Transaccion saveTransaction(TransaccionRequest transaccionRequest, String nombreImagen, Principal principal ){
 
@@ -110,18 +109,16 @@ public class TransactionService {
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         Transaccion transaccion = new Transaccion();
-        if("Recarga".equals(transaccionRequest.getTipo())){
-
+        if("Recarga".equals(transaccionRequest.getTipo()) && nombreImagen!=null){
             transaccion.setFechaBoleta(transaccionRequest.getFechaBoleta());
             transaccion.setImagenBoleta(nombreImagen);
-        }else{
-            transaccion.setBanco(transaccionRequest.getBanco());
-            transaccion.setCtaBanco(transaccionRequest.getCtaBanco());
+            transaccion.setNumBoleta(transaccionRequest.getNumBoleta());
         }
-
         transaccion.setMonto(transaccionRequest.getMonto());
         transaccion.setEstado("Pendiente");
         transaccion.setTipo(transaccionRequest.getTipo());
+        transaccion.setBanco(transaccionRequest.getBanco());
+        transaccion.setCtaBanco(transaccionRequest.getCtaBanco());
         transaccion.setSolicitadoPor((Usuario) persona);
 
         return transactionRepository.save(transaccion);

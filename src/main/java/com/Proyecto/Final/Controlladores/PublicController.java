@@ -11,7 +11,6 @@ import org.springframework.validation.FieldError;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
 import com.Proyecto.Final.Entity.Robot;
-import com.Proyecto.Final.Entity.Usuario;
 import com.Proyecto.Final.Service.*;
 
 import jakarta.validation.Valid;
@@ -22,9 +21,6 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 @RequestMapping("")
 public class PublicController {
-
-    @Autowired
-    private UserService userService;
 
     @Autowired
     private PersonaService personaService;
@@ -39,19 +35,6 @@ public class PublicController {
 
     @GetMapping("/")
     public String home(Model model, Principal principal) {
-        if(principal !=null){
-            String username = principal.getName();
-            Usuario usuario = userService.findByUsername(username);
-            if(usuario !=null){
-                double saldo = usuario.getSaldo();
-                model.addAttribute("saldo", saldo);
-                model.addAttribute("username", username);
-            }else{
-                model.addAttribute("saldo", "N/A");
-            }
-        }else{
-            model.addAttribute("saldo", "N/A");
-        }
         return "home";
     }
     
