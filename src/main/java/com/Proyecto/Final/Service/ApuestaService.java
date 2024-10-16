@@ -12,6 +12,7 @@ import com.Proyecto.Final.Entity.Apuesta;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Usuario;
 import com.Proyecto.Final.Repository.ApuestaRepository;
+import com.Proyecto.Final.Repository.CombateRepository;
 import com.Proyecto.Final.Repository.RobotRepository;
 import com.Proyecto.Final.Repository.UserRepository;
 
@@ -30,6 +31,13 @@ public class ApuestaService {
     @Autowired
     private RobotRepository robotRepository;
 
+    @Autowired
+    private CombateRepository combateRepository;
+
+
+    public boolean haApostado(Long userId, Long combateId) {
+        return apuestaRepository.existsByUsuarioIdAndCombateId(userId, combateId);
+    }
 
     //Logica de Historiales
     public List<Apuesta> getApuestasUser(Principal principal, String estado, Date fechaInicio, Date fechaFin){
@@ -59,7 +67,7 @@ public class ApuestaService {
     public String realizarApuesta(Long combateId, Long robotId, Double monto, Principal principal){
         try{
             Combate combate = combateService.sizeCombate(combateId);
-            if (combate == null || !"pendiente".equalsIgnoreCase(combate.getEstado())) {
+            if (combate == null || !"Programado".equalsIgnoreCase(combate.getEstado())) {
                 return "No se puede realizar la apuesta, el combate no está pendiente.";
             }
             Usuario usuario = userRepository.findByUsername(principal.getName()).get();
@@ -81,5 +89,44 @@ public class ApuestaService {
             e.printStackTrace(); // Para depuración
             return "Ocurrió un error al realizar la apuesta: " + e.getMessage();
         }
+    }
+
+    public void guardarGanador(Long combateId, Long ganadorId) {
+        try {
+            // Guardar el ganador
+            Combate combate = combateService.sizeCombate(combateId);
+            combate.setIdGanador(ganadorId); // Suponiendo que tienes un método para establecer el ganador
+            combateRepository.save(combate);
+
+            // Calcular el monto total apostado
+            double montoTotalApostado = calcularMontoTotalApostado(combateId);
+
+            // Calcular el monto a repartir y el porcentaje de la casa
+            double porcentajeCasa = montoTotalApostado * 0.10;
+            double montoAPagar = montoTotalApostado - porcentajeCasa;
+
+            // Obtener las apuestas realizadas en este combate
+            List<Apuesta> apuestas = apuestaRepository.findByCombateId(combateId);
+
+            // Pagar a los ganadores
+            for (Apuesta apuesta : apuestas) {
+                if (apuesta.getRobotApostado().getId().equals(ganadorId)) {
+                    // Calcular la ganancia para este usuario
+                    double ganancia = (apuesta.getMonto() / montoTotalApostado) * montoAPagar;
+                    Usuario usuario = apuesta.getUsuario();
+                    usuario.setSaldo(usuario.getSaldo() + ganancia);
+                    userRepository.save(usuario);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace(); // Para depuración
+            throw new RuntimeException("Error al guardar el ganador: " + e.getMessage());
+        }
+    }
+
+    public double calcularMontoTotalApostado(Long combateId) {
+        // Implementa la lógica para calcular el monto total apostado
+        List<Apuesta> apuestas = apuestaRepository.findByCombateId(combateId);
+        return apuestas.stream().mapToDouble(Apuesta::getMonto).sum();
     }
 }

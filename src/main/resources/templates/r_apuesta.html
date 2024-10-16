@@ -7,6 +7,7 @@
     <div class="container mt-5">
         <h1 class="text-center">Realizar Apuesta</h1>
         
+        
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <!-- Mostrar las imágenes de los robots antes de la selección -->
@@ -41,7 +42,7 @@
                         <div class="text-danger" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}">Error</div>
                     </div>
 
-                    <input type="hidden" th:field="*{combateId}" th:value="${combate.id}">
+                    <input type="hidden" name="combateId" th:value="${combate.id}">
 
                     <button type="submit" class="btn btn-primary">Confirmar Apuesta</button>
                 </form>

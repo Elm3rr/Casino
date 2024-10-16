@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.Proyecto.Final.DTO.CombateRequest;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Robot;
+import com.Proyecto.Final.Service.ApuestaService;
 import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.RobotService;
 
@@ -30,6 +31,9 @@ public class CombateController {
 
     @Autowired
     private RobotService robotService;
+
+    @Autowired
+    private ApuestaService apuestaService;
 
     @GetMapping("/eliminar")
     public String deleteProduct(@RequestParam long id, Principal principal){
@@ -94,8 +98,31 @@ public class CombateController {
             model.addAttribute("estados", estados);
             return "r_combate";
         }
-        return "redirect:/user/combates";
+        return "redirect:/home";
     }
+
+    @GetMapping("/iniciar")
+        public String iniciarCombate(@RequestParam("id") Long id, Model model) {
+        Combate combate = combateService.findById(id);
+        model.addAttribute("combate", combate);
+        return "determinarGanador";
+    }
+
+    @PostMapping("/combate/guardarGanador")
+    public String guardarGanador(@RequestParam("combateId") Long combateId,
+                                  @RequestParam("ganador") Long ganadorId) {
+        try {
+            apuestaService.guardarGanador(combateId, ganadorId);
+            return "redirect:/mod/combates";  // Redirigir a la lista de combates
+        } catch (Exception e) {
+            e.printStackTrace(); // Para depuración
+            return "error"; // Redirigir a una página de error si ocurre algún problema
+        }
+    }
+
+
+
+
     
 
 }

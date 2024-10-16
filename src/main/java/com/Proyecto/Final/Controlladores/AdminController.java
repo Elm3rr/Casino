@@ -153,4 +153,9 @@ public class AdminController {
         model.addAttribute("estado", estado);
         return "combates";
     }
+
+    @GetMapping("/auditoria")
+    public String auditar(){
+        return null;
+    }
 }

@@ -28,7 +28,11 @@
 
     <h1 class="text-center my-4" sec:authorize="hasRole('ADMIN')">Gestión de Combates</h1>
     <h1 class="text-center my-4" sec:authorize="hasRole('USER')">Próximos Combates</h1>
-    
+    <div class="container mt-3">
+        <div th:if="${mensaje}" class="alert alert-info" role="alert">
+            <p th:text="${mensaje}"></p>
+        </div>
+    </div>
     <a class="btn btn-primary" href="/combate/crear" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Crear combate</a>
     <div class="card mb-4">
         <div class="card-header">
@@ -99,18 +103,34 @@
                             </div>
                         </div>
                         <div class="card-footer d-flex justify-content-between">
-                            <a class="btn btn-primary" th:href="@{/user/hacerapuesta(id=${combate.id})}" sec:authorize="hasRole('USER')">Apostar</a>
-                            <div sec:authorize="hasRole('ADMIN')">
+                            <!-- Mostrar botón de "Apostar" solo si el usuario no ha apostado -->
+                            <a class="btn btn-primary" th:if="${!combate.haApostado}" 
+                               th:href="@{/user/hacerapuesta(id=${combate.id})}" sec:authorize="hasRole('USER')">
+                               Apostar
+                            </a>
+                            <p th:if="${combate.haApostado}" class="text-muted">Ya has apostado en este combate</p>
+                        
+                            <!-- Botones para Admin y Mod -->
+                            <div sec:authorize="hasAnyRole('ADMIN', 'MOD')">
                                 <a class="btn btn-warning" th:href="@{/combate/editar(id=${combate.id})}">Editar</a>
-                                <a class="btn btn-danger" th:href="@{/combate/eliminar(id=${combate.id})}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                                <a class="btn btn-danger" th:href="@{/combate/eliminar(id=${combate.id})}" 
+                                   onclick="return confirm('¿Estás seguro?')">Eliminar</a>
+                                <a class="btn btn-success" th:href="@{/combate/iniciar(id=${combate.id})}" sec:authorize="hasRole('MOD')">Iniciar Combate</a>
                             </div>
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
-    
+    <script>
+        // Esperar 1 minuto (60000 ms) antes de ocultar el mensaje
+        setTimeout(function() {
+            var alertElement = document.querySelector('.alert');
+            if (alertElement) {
+                alertElement.style.display = 'none';
+            }
+        }, 60000);
+    </script>
     <footer th:replace="~{layout :: page_footer}"></footer>
 </body>
 </html>

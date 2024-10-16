@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: page_head(pageTitle='Determinar Ganador')}"></head>
+<body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
+
+    <h1 class="text-center my-4">Determinar Ganador del Combate</h1>
+
+    <div class="container">
+        <h3 th:text="'Combate entre: ' + ${combate.robot1.nombre} + ' y ' + ${combate.robot2.nombre}"></h3>
+
+        <form th:action="@{/combate/guardarGanador}" method="post">
+            <input type="hidden" name="combateId" th:value="${combate.id}" />
+            
+            <div class="form-group">
+                <label for="ganador">Seleccionar Ganador:</label>
+                <select id="ganador" name="ganador" class="form-control" required>
+                    <option th:value="${combate.robot1.id}" th:text="${combate.robot1.nombre}"></option>
+                    <option th:value="${combate.robot2.id}" th:text="${combate.robot2.nombre}"></option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Guardar Ganador</button>
+        </form>
+    </div>
+
+    <footer th:replace="~{layout :: page_footer}"></footer>
+</body>
+</html>

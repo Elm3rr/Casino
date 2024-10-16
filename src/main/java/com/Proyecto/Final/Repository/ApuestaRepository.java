@@ -24,4 +24,9 @@ public interface ApuestaRepository extends JpaRepository<Apuesta, Long> {
     List<Apuesta> findByUsuarioUsernameAndEstadoAndFechaActualizacionBetweenOrderByFechaActualizacion(String username, String estado, Date fechaInicio, Date fechaFin);
     
     List<Apuesta> findByCombate(Combate combate);
+
+    List<Apuesta> findByCombateId(Long id);
+
+    boolean existsByUsuarioIdAndCombateId(Long userId, Long combateId);
+
 }

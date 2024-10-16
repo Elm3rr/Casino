@@ -22,11 +22,13 @@ import com.Proyecto.Final.DTO.PersonaRequest;
 import com.Proyecto.Final.DTO.TransaccionRequest;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Transaccion;
+import com.Proyecto.Final.Entity.Usuario;
 import com.Proyecto.Final.Service.ApuestaService;
 import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.PersonaService;
 import com.Proyecto.Final.Service.TransactionService;
+import com.Proyecto.Final.Service.UserService;
 
 import jakarta.validation.Valid;
 
@@ -48,6 +50,9 @@ public class UserController {
 
     @Autowired
     private ApuestaService apuestaService;
+
+    @Autowired
+    private UserService userService;
 
     //Logica para eliminar
     @GetMapping("/eliminacion")
@@ -189,44 +194,67 @@ public class UserController {
     //Lista de combates para que los usuarios apuesten
     @GetMapping("/combates")
     public String combates(Model model,
-    @RequestParam(value="estado", defaultValue="Programado") String estado,
-    @RequestParam(value="busqueda", required=false) String busqueda){
+                           @RequestParam(value = "estado", defaultValue = "Programado") String estado,
+                           @RequestParam(value = "busqueda", required = false) String busqueda,
+                           Principal principal) {
+
+        // Obtener el usuario autenticado
+        Usuario user = userService.findByUsername(principal.getName());
+
+        // Obtener la lista de combates
         List<Combate> combates = combateService.getCombatesfoUsers(estado, busqueda);
+
+        // Verificar si el usuario ha apostado en cada combate
+        combates.forEach(combate -> {
+            boolean haApostado = apuestaService.haApostado(user.getId(), combate.getId());
+            combate.setHaApostado(haApostado);  // Se debe agregar un campo booleano "haApostado" en la entidad Combate
+        });
+
+        // Pasar la lista de combates al modelo
         model.addAttribute("combates", combates);
-        return "combates";
+        model.addAttribute("user", user);  // Pasar también el usuario autenticado
+
+        return "combates";  // Retornar la vista combates.html
     }
     
 
     @PostMapping("/apostar")
     public String realizarApuesta(
         @Valid @ModelAttribute("apuestaRequest") ApuestaRequest apuestaRequest,
-        BindingResult bindingResult, 
-        Model model, Principal principal) {
-
-    if (bindingResult.hasErrors()) {
-        return "r_apuesta"; // Devuelve el formulario con errores
+        @RequestParam("combateId") Long combateId,  // Agregar esto para probar
+        BindingResult bindingResult, Model model, Principal principal, RedirectAttributes redirectAttributes) {
+    
+        System.out.println("ID del combate recibido por parámetro: " + combateId);
+        System.out.println("ID del combate recibido en ApuestaRequest: " + apuestaRequest.getCombateId());
+        
+        if (bindingResult.hasErrors()) {
+            System.out.println("Errores en la validación del formulario: " + bindingResult.getAllErrors());
+            return "r_apuesta"; // Devuelve el formulario con errores
+        }
+    
+        String resultado = apuestaService.realizarApuesta(apuestaRequest.getCombateId(),
+                apuestaRequest.getRobotApostadoId(), apuestaRequest.getMonto(), principal);
+    
+        redirectAttributes.addFlashAttribute("mensaje", resultado);
+        return "redirect:/user/combates";
     }
-
-    String resultado = apuestaService.realizarApuesta(apuestaRequest.getCombateId(),
-            apuestaRequest.getRobotApostadoId(), apuestaRequest.getMonto(), principal);
-
-    model.addAttribute("mensaje", resultado);
-    return "redirect:/user/combates";
-    }
-
+    
     @GetMapping("/hacerapuesta")
     public String ludopatia(@RequestParam("id") Long combateId, Model model) {
+        System.out.println("Entrando en ludopatia...");
+        System.out.println("ID del combate recibido: " + combateId);
+    
         // Supongamos que obtienes el objeto 'Combate' a partir del ID proporcionado.
         Combate combate = combateService.findById(combateId);
-        
-        // Añadir el combate al modelo.
+        System.out.println("Combate obtenido: " + (combate != null ? combate.toString() : "Combate no encontrado"));
+    
         model.addAttribute("combate", combate);
-        
-        // Añadir el request del formulario.
+    
         model.addAttribute("apuestaRequest", new ApuestaRequest());
-        
+    
         return "r_apuesta";
     }
+    
     
     
 }

@@ -1,183 +1,37 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org">
-<head th:replace="~{layout :: page_head(pageTitle='Transacciones')}"></head>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: page_head(pageTitle='Apuestas')}"></head>
 <body>
   <div class="wrapper">
     <nav th:replace="~{layout :: page_navbar}"></nav>
       
     <main th:fragment="content">
       <div class="container mt-5">
-        <h1 class="text-center mb-4">Gestión de Transacciones</h1>
-        <!-- Formulario de búsqueda -->
-         
-        <div class="card mb-4">
-          <div class="card-header">
-            <h3 class="card-title">Buscar Transacciones</h3>
-          </div>
-          <div class="card-body">
-            <form th:action="${#authorization.expression('hasRole(''ADMIN'')') ? '/data/transactions' : '/user/myTransactions'}" 
-                  method="get" sec:authorize="hasAnyRole('ADMIN', 'USER')">
-              <div class="row g-3">
-                <div class="col-md-2">
-                  <select name="tipo" class="form-select" aria-label="Selecciona el Tipo de Transacción">
-                    <option value="Recarga">Recarga</option>
-                    <option value="Retiro">Retiro</option>
-                  </select>
-                </div>
-                <div class="col-md-2">
-                  <select name="estado" class="form-select" aria-label="Selecciona el Estado">
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Aprobada">Aprobada</option>
-                    <option value="Rechazada">Rechazada</option>
-                  </select>
-                </div>
-                <div class="col-md-3" sec:authorize="hasRole('ADMIN')">
-                  <input type="text" name="busqueda" class="form-control" 
-                         placeholder="Buscar por usuario" aria-label="Buscar">
-                </div>
+        <h1 class="text-center mb-4">Listado de Apuestas</h1>
 
-                <div class="col-md-2">
-                  <input type="date" name="fechaInicio" class="form-control" placeholder="Fecha de inicio">
-                </div>
-
-                <div class="col-md-2">
-                  <input type="date" name="fechaFin" class="form-control" placeholder="Fecha de fin">
-                </div>
-
-                <div class="col-md-1 d-grid">
-                  <button type="submit" class="btn btn-outline-secondary">Buscar</button>
-                </div>
-
-              </div>
-            </form>
-
-          </div>
-        </div>
-
-        <!-- Tabla de transacciones -->
+        <!-- Tabla de apuestas -->
         <div class="card">
           <div class="card-header">
-            <h3 class="card-title">
-              Listado de Transacciones 
-              <span th:if="${tipo != null}" th:text="'(' + ${tipo} + ')'"></span>
-          </h3>          
-        </div>
+            <h3 class="card-title">Tus Apuestas</h3>          
+          </div>
           <div class="card-body">
             <table class="table table-striped table-hover">
               <thead>
                 <tr>
-                  <th>Fecha de Solicitud</th>
+                  <th>Fecha de Apuesta</th>
                   <th>Monto</th>
-                  <th th:if="${estado != 'Pendiente'}">Fecha de Revisión</th>
-                  <th th:if="${estado == 'Aprobada' || tipo == 'Recarga'}">N. Boleta</th>
-                  <th th:if="${tipo=='Recarga'}">Fecha Boleta</th>
+                  <th>Combate</th>
+                  <th>Robot Apostado</th>
                   <th>Estado</th>
-                  <th>Cuenta de Banco</th>
-                  <th>Banco</th>
-                  <th th:if="${estado == 'Rechazada'}">Motivo de Rechazo</th>
-                  <th th:if="${estado == 'Aprobada' && tipo=='Retiro'|| tipo == 'Recarga'}">Boleta</th>
-                  <th sec:authorize="hasRole('ADMIN')" th:if="${estado == 'Pendiente'}">Opciones</th>
                 </tr>
               </thead>
               <tbody>
-                <tr th:each="transaccion : ${transacciones}">
-                  <td th:text="${transaccion.fechaCreacion.toString().substring(0, 10)}"></td>
-                  <td th:text="${transaccion.monto}"></td>  
-                  <td th:if="${estado != 'Pendiente'}" th:text="${transaccion.fechaActualizacion.toString().substring(0, 10)}"></td>
-                  <td th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga' }" th:text="${transaccion.numBoleta}"></td>
-                  <td th:if="${tipo=='Recarga'}" th:text="${transaccion.fechaBoleta.toString().substring(0, 10)}"></td>
-                  <td th:text="${transaccion.estado}"></td>  
-                  <td th:text="${transaccion.ctaBanco}"></td>
-                  <td th:text="${transaccion.Banco}"></td>
-                  <td th:if="${estado == 'Rechazada'}" th:text="${transaccion.motivoRechazo}"></td>
-                  <td>
-                    <img th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga'}" 
-                         th:src="@{'/images/' + ${transaccion.imagenBoleta}}" 
-                         alt="Boleta Image" width="100"
-                         style="cursor: pointer;" 
-                         data-bs-toggle="modal" 
-                         th:data-bs-target="'#modalImagen' + ${transaccion.id}">
-                  </td>
-                  <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN')">
-                    <div th:if="${estado == 'Pendiente'}">
-
-                      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" 
-                      th:data-bs-target="'#modalAprobar' + ${transaccion.id}">Aprobar</button>
-
-                      <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal" 
-                              th:data-bs-target="'#modalRechazar' + ${transaccion.id}">Rechazar</button>
-                    </div>
-                    <!-- Modal para confirmar eliminación -->
-                    <div th:id="'modalRechazar' + ${transaccion.id}" class="modal fade" tabindex="-1">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title">Motivo de Rechazo</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <form th:action="@{/admin/declineTransaction(id=${transaccion.id})}" method="post">
-                            <div class="modal-body">
-                              <div class="mb-3">
-                                <label for="motivo" class="form-label">Motivo:</label>
-                                <input type="text" name="motivo" placeholder="Ingresa el motivo" class="form-control" required>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              <button type="submit" class="btn btn-danger">Confirmar</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Modal para confirmar aprobación -->
-                    <div th:id="'modalAprobar' + ${transaccion.id}" class="modal fade" tabindex="-1">
-                      <div class="modal-dialog">
-                        <div class="modal-content">
-                          <div class="modal-header">
-                            <h5 class="modal-title">Aprobar Transacción</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                          </div>
-                          <form th:action="@{/admin/approveTransaction(id=${transaccion.id})}" method="post" enctype="multipart/form-data">
-                            <div class="modal-body">
-                              <div th:if="${transaccion.tipo == 'Retiro'}" class="mb-3">
-                                <label for="imagenBoleta" class="form-label">Adjuntar Boleta:</label>
-                                <input type="file" name="imagenBoleta" class="form-control" required>
-                              </div>
-                              <div>
-                                <p>¿Estás seguro de que deseas aprobar esta transacción?</p>
-                              </div>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                              <button type="submit" class="btn btn-primary">Aprobar</button>
-                            </div>
-                          </form>
-                        </div>
-                      </div>
-                    </div>
-
-                    <!-- Modal para mostrar la imagen ampliada -->
-                    <div th:id="'modalImagen' + ${transaccion.id}" class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
-                      <div class="modal-dialog modal-lg">
-                          <div class="modal-content">
-                              <div class="modal-header">
-                                  <h5 class="modal-title" id="modalLabel">Imagen de Boleta</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                              </div>
-                              <div class="modal-body">
-                                  <img th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga'}" 
-                                      th:src="@{'/images/' + ${transaccion.imagenBoleta}}"
-                                      alt="Boleta Image" class="img-fluid">
-                              </div>
-                              <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                              </div>
-                          </div>
-                      </div>
-                    </div>
-                  </td>
+                <tr th:each="apuesta : ${apuestas}">
+                  <td th:text="${apuesta.fechaApuesta.toString().substring(0, 10)}"></td>
+                  <td th:text="${apuesta.monto}"></td>
+                  <td th:text="${apuesta.combate.nombre}"></td>
+                  <td th:text="${apuesta.robotApostado.nombre}"></td>
+                  <td th:text="${apuesta.estado}"></td>
                 </tr>
               </tbody>
             </table>

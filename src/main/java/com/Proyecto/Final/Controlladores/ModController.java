@@ -30,4 +30,6 @@ public class ModController {
         model.addAttribute("combates", combates);
         return "combates";
     }
+
+    
 }

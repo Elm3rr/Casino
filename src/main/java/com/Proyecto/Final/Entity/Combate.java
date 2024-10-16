@@ -66,6 +66,10 @@ public class Combate {
     @OneToMany(mappedBy="combate", cascade = CascadeType.ALL)
     private List<Apuesta> apuestas;
 
+    private boolean haApostado;
+
+    private Long idGanador;
+
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
