@@ -3,6 +3,7 @@ package com.Proyecto.Final.Controlladores;
 import java.security.Principal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
+import com.Proyecto.Final.Entity.Apuesta;
 import com.Proyecto.Final.Entity.Combate;
+import com.Proyecto.Final.Service.ApuestaService;
 import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.ModService;
@@ -48,6 +51,9 @@ public class AdminController {
 
     @Autowired
     ImagenService imagenService;
+
+    @Autowired
+    ApuestaService apuestaService;
 
     @GetMapping("/registerUsers")
     public String register(Model model){
@@ -154,8 +160,22 @@ public class AdminController {
         return "combates";
     }
 
-    @GetMapping("/auditoria")
-    public String auditar(){
-        return null;
+
+
+    @GetMapping("/admin/apuestas")
+    public String mostrarApuestasAdmin(
+            @RequestParam(name = "estado", required = false, defaultValue = "Pendiente") String estado,
+            @RequestParam(name = "username", required = false) String username,
+            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+            Model model) {
+        
+        // Obtener apuestas basadas en los filtros proporcionados
+        List<Apuesta> apuestas = apuestaService.getApuestasAdmin(estado, username, fechaInicio, fechaFin);
+        
+        // Agregar las apuestas al modelo para mostrarlas en la vista
+        model.addAttribute("apuestas", apuestas);
+        
+        return "apuestas"; // Nombre de la vista Thymeleaf (apuestas.html)
     }
 }

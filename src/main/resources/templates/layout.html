@@ -76,9 +76,13 @@
               <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                 <a class="nav-link text-dark" href="/data/transactions">Transacciones</a>
               </li>
-              <li class="nav-item" sec:authorize="hasRole('ADMIN')">
-                <a class="nav-link text-dark" href="/admin/usuarios">Auditoria</a>
-              </li>
+              <li class="nav-item" sec:authorize="hasRole('USER')">
+                <a class="nav-link text-dark" href="/user/apuestas">Mis Apuestas</a>
+            </li>
+            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
+                <a class="nav-link text-dark" href="/admin/apuestas">Apuestas (Admin)</a>
+            </li>
+            
 
             </ul>
             

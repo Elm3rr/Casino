@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import com.Proyecto.Final.DTO.ApuestaRequest;
 import com.Proyecto.Final.DTO.PersonaRequest;
 import com.Proyecto.Final.DTO.TransaccionRequest;
+import com.Proyecto.Final.Entity.Apuesta;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Transaccion;
 import com.Proyecto.Final.Entity.Usuario;
@@ -255,6 +256,23 @@ public class UserController {
         return "r_apuesta";
     }
     
+
+    @GetMapping("/apuestas")
+    public String mostrarApuestasUsuario(
+            Principal principal,
+            @RequestParam(name = "estado", required = false, defaultValue = "Pendiente") String estado,
+            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+            Model model) {
+        
+        // Obtener apuestas del usuario
+        List<Apuesta> apuestas = apuestaService.getApuestasUser(principal, estado, fechaInicio, fechaFin);
+        
+        // Agregar las apuestas al modelo para mostrarlas en la vista
+        model.addAttribute("apuestas", apuestas);
+        
+        return "apuestas"; // Nombre de la vista Thymeleaf (apuestas.html)
+    }
     
     
 }
