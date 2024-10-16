@@ -4,24 +4,24 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, CustomAuthenticationFailureHandler failureHandler) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/admin/**", "/auditoria/**").hasRole("ADMIN")
-                .requestMatchers( "/robot/**", "/combate/**", "/mod/**", "/data/**").hasAnyRole("ADMIN", "MOD")
+                .requestMatchers("/robot/**", "/combate/**", "/mod/**", "/data/**").hasAnyRole("ADMIN", "MOD")
                 .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN", "MOD")
                 .requestMatchers("/transaccion/**").hasRole("USER")
                 .requestMatchers("**", "/images/**", "/css/**", "/js/**").permitAll()
@@ -30,11 +30,11 @@ public class SecurityConfig {
             .formLogin(form -> form
                 .loginPage("/login")
                 .permitAll()
-                .failureUrl("/login?error=true")
+                .failureHandler(failureHandler)
                 .defaultSuccessUrl("/", true)
             )
             .logout(logout -> logout.permitAll()
-            .logoutSuccessUrl("/login")
+                .logoutSuccessUrl("/login")
             )
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
@@ -43,10 +43,9 @@ public class SecurityConfig {
                 .expiredSessionStrategy(request -> {
                     request.getResponse().sendRedirect("/login");
                 })
-
             )
-            .exceptionHandling(exception-> exception
-            .accessDeniedPage("/error/403")
+            .exceptionHandling(exception -> exception
+                .accessDeniedPage("/error/403")
             );
 
         return http.build();
@@ -60,5 +59,10 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public CustomAuthenticationFailureHandler customAuthenticationFailureHandler() {
+        return new CustomAuthenticationFailureHandler();
     }
 }

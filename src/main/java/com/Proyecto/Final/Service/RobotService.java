@@ -8,8 +8,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.Proyecto.Final.DTO.RobotRequest;
+import com.Proyecto.Final.Entity.Persona;
 import com.Proyecto.Final.Entity.Robot;
 import com.Proyecto.Final.Entity.Usuario;
+import com.Proyecto.Final.Repository.PersonaRepository;
 import com.Proyecto.Final.Repository.RobotRepository;
 import com.Proyecto.Final.Repository.UserRepository;
 
@@ -21,6 +23,9 @@ public class RobotService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PersonaRepository personaRepository;
 
     //Logica de Busquedas
     public Robot findRobot(Long id){
@@ -78,7 +83,7 @@ public class RobotService {
 
     public Robot saveRobot(RobotRequest robotRequest, String nombre, Principal principal){
 
-        Usuario usuario = userRepository.findByUsername(principal.getName())            
+        Persona persona = personaRepository.findByUsername(principal.getName())            
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         
         Robot robot;
@@ -102,7 +107,7 @@ public class RobotService {
         robot.setJugador(robotRequest.getJugador());
         robot.setArmas(robotRequest.getArmas());
         robot.setImage(nombre);
-        robot.setCreadoPor(usuario);
+        robot.setCreadoPor(persona);
 
         try {
             return robotRepository.save(robot);

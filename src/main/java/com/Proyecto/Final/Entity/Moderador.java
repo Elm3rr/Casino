@@ -33,7 +33,7 @@ public class Moderador extends Persona{
     @OneToMany(mappedBy = "RobotEliminadoPor", cascade = CascadeType.ALL)
     private List<Robot> robotsEliminados;
 
-    @OneToMany(mappedBy = "CombateEliminadoPor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "combateEliminadoPor", cascade = CascadeType.ALL)
     private List<Combate> combatesEliminados;
 
     //Administrador quien lo creo

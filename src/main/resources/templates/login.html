@@ -51,6 +51,10 @@
                         Usuario o contraseña incorrectos.
                     </div>
 
+                    <div th:if="${session.error}" class="alert alert-danger">
+                        <p th:text="${session.error}"></p>
+                    </div>
+                    
                     <div th:if="${param.logout}" class="alert alert-success">
                         Has cerrado sesión exitosamente.
                     </div>

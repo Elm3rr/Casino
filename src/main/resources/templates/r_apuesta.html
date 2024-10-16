@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{layout :: page_head(pageTitle='Hacer Apuesta')}"></head>
+<body>
+    <nav th:replace="~{layout :: page_navbar}"></nav>
+    
+    <div class="container mt-5">
+        <h1 class="text-center">Realizar Apuesta</h1>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <!-- Mostrar las imágenes de los robots antes de la selección -->
+                <div class="mb-4 text-center">
+                    <h4>Robots en Combate</h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <img th:src="@{'/images/' + ${combate.robot1.image}}" alt="Robot 1" class="img-fluid mb-2">
+                            <p th:text="${combate.robot1.nombre}"></p>
+                        </div>
+                        <div class="col-md-6">
+                            <img th:src="@{'/images/' + ${combate.robot2.image}}" alt="Robot 2" class="img-fluid mb-2">
+                            <p th:text="${combate.robot2.nombre}"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <form th:action="@{/user/apostar}" th:object="${apuestaRequest}" method="post">
+                    <div class="mb-3">
+                        <label for="robotApostadoId" class="form-label">Selecciona el Robot</label>
+                        <select id="robotApostadoId" th:field="*{robotApostadoId}" class="form-select" required>
+                            <option value="" disabled selected>Selecciona un robot</option>
+                            <option th:value="${combate.robot1.id}" th:text="${combate.robot1.nombre}"></option>
+                            <option th:value="${combate.robot2.id}" th:text="${combate.robot2.nombre}"></option>
+                        </select>
+                        <div class="text-danger" th:if="${#fields.hasErrors('robotApostadoId')}" th:errors="*{robotApostadoId}">Error</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="monto" class="form-label">Monto a Apostar</label>
+                        <input type="number" class="form-control" id="monto" th:field="*{monto}" min="1" required>
+                        <div class="text-danger" th:if="${#fields.hasErrors('monto')}" th:errors="*{monto}">Error</div>
+                    </div>
+
+                    <input type="hidden" th:field="*{combateId}" th:value="${combate.id}">
+
+                    <button type="submit" class="btn btn-primary">Confirmar Apuesta</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <footer th:replace="~{layout :: page_footer}"></footer>
+</body>
+</html>

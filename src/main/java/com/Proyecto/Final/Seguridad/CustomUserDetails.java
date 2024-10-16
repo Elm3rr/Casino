@@ -38,7 +38,7 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !persona.isEliminadoVetado();
     }
 
     @Override
@@ -48,7 +48,10 @@ public class CustomUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return true;
+        return !persona.isEliminadoVetado();
     }
     
+    public String getMotivoEliminacionVetado() {
+        return persona.getMotivoEliminacion();
+    }
 }

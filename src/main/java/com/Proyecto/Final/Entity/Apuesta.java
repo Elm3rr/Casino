@@ -3,6 +3,7 @@ package com.Proyecto.Final.Entity;
 import java.util.Date;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -37,6 +38,12 @@ public class Apuesta {
 
     private double monto;
 
+    String estado; 
+
     @CreationTimestamp
     private Date fechaCreacion;
+
+    @UpdateTimestamp
+    private Date fechaActualizacion;
+
 }

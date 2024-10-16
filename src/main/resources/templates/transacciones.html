@@ -9,6 +9,7 @@
       <div class="container mt-5">
         <h1 class="text-center mb-4">Gestión de Transacciones</h1>
         <!-- Formulario de búsqueda -->
+         
         <div class="card mb-4">
           <div class="card-header">
             <h3 class="card-title">Buscar Transacciones</h3>
@@ -90,8 +91,12 @@
                   <td th:text="${transaccion.Banco}"></td>
                   <td th:if="${estado == 'Rechazada'}" th:text="${transaccion.motivoRechazo}"></td>
                   <td>
-                    <img th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga'}" th:src="@{'/images/' + ${transaccion.imagenBoleta}}" 
-                         alt="Boleta Image" width="100">
+                    <img th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga'}" 
+                         th:src="@{'/images/' + ${transaccion.imagenBoleta}}" 
+                         alt="Boleta Image" width="100"
+                         style="cursor: pointer;" 
+                         data-bs-toggle="modal" 
+                         th:data-bs-target="'#modalImagen' + ${transaccion.id}">
                   </td>
                   <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN')">
                     <div th:if="${estado == 'Pendiente'}">
@@ -153,7 +158,25 @@
                       </div>
                     </div>
 
-
+                    <!-- Modal para mostrar la imagen ampliada -->
+                    <div th:id="'modalImagen' + ${transaccion.id}" class="modal fade" tabindex="-1" aria-labelledby="modalLabel" aria-hidden="true">
+                      <div class="modal-dialog modal-lg">
+                          <div class="modal-content">
+                              <div class="modal-header">
+                                  <h5 class="modal-title" id="modalLabel">Imagen de Boleta</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                              </div>
+                              <div class="modal-body">
+                                  <img th:if="${estado == 'Aprobada' && tipo=='Retiro' || tipo == 'Recarga'}" 
+                                      th:src="@{'/images/' + ${transaccion.imagenBoleta}}"
+                                      alt="Boleta Image" class="img-fluid">
+                              </div>
+                              <div class="modal-footer">
+                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                              </div>
+                          </div>
+                      </div>
+                    </div>
                   </td>
                 </tr>
               </tbody>

@@ -1,170 +1,61 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Robot Gambling Site - Combates</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    <style>
-        .card img {
-            max-width: 100px;
-            height: auto;
-        }
-        .card-title {
-            font-weight: bold;
-            text-align: center;
-        }
-        .vs-text {
-            font-size: 24px;
-            font-weight: bold;
-            margin: 0 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1 class="text-center my-4">Próximos Combates</h1>
-        <a class="btn btn-primary mb-4" href="/combate/crear">Crear combate</a>
-        <form class="d-flex mb-4" action="/combate/buscar" method="get">
-            <input class="form-control me-2" type="search" name="query" placeholder="Buscar combate por robot" aria-label="Search">
-            <button class="btn btn-outline-success" type="submit">Buscar</button>
-        </form>
-
-        <!-- Combates en tarjetas -->
-        <div class="row row-cols-1 row-cols-md-3 g-4">
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Combate entre:</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 1">
-                                <p>Robot 1</p>
-                            </div>
-                            <span class="vs-text">VS</span>
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 2">
-                                <p>Robot 2</p>
-                            </div>
-                        </div>
-                        <p class="mt-3"><strong>Fecha del combate:</strong> 12/10/2024</p>
+<!-- Combates en tarjetas -->
+<div class="row row-cols-1 row-cols-md-3 g-4">
+    <div class="col" th:each="combate : ${combates}">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">Combate entre:</h5>
+                <div class="d-flex justify-content-around">
+                    <div>
+                        <img th:src="@{'/images/' + ${combate.robot1.image}}" alt="Robot 1" width="100">
+                        <p th:text="${combate.robot1.nombre}"></p>
                     </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-primary" href="/user/apostar_combate/1">Apostar</a>
-                        <div>
-                            <a class="btn btn-warning" href="/combate/editar/1">Editar</a>
-                            <a class="btn btn-danger" href="/combate/eliminar/1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                        </div>
+                    <span class="align-self-center">VS</span>
+                    <div>
+                        <img th:src="@{'/images/' + ${combate.robot2.image}}" alt="Robot 2" width="100">
+                        <p th:text="${combate.robot2.nombre}"></p>
                     </div>
                 </div>
+                <p class="mt-3"><strong>Fecha del combate:</strong> <span th:text="${#dates.format(combate.fecha, 'dd/MM/yyyy')}"></span></p>
             </div>
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Combate entre:</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 1">
-                                <p>Robot 1</p>
-                            </div>
-                            <span class="vs-text">VS</span>
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 2">
-                                <p>Robot 2</p>
-                            </div>
-                        </div>
-                        <p class="mt-3"><strong>Fecha del combate:</strong> 12/10/2024</p>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-primary" href="/user/apostar_combate/1">Apostar</a>
-                        <div>
-                            <a class="btn btn-warning" href="/combate/editar/1">Editar</a>
-                            <a class="btn btn-danger" href="/combate/eliminar/1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                        </div>
-                    </div>
+            <div class="card-footer d-flex justify-content-between">
+                <button class="btn btn-primary" type="button" th:data-bs-toggle="modal" th:data-bs-target="#modalApuesta${combate.id}" sec:authorize="hasRole('USER')">Apostar</button>
+                <div sec:authorize="hasRole('ADMIN')">
+                    <a class="btn btn-warning" th:href="@{/combate/editar(id=${combate.id})}">Editar</a>
+                    <a class="btn btn-danger" th:href="@{/combate/eliminar(id=${combate.id})}" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
                 </div>
             </div>
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Combate entre:</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 1">
-                                <p>Robot 1</p>
-                            </div>
-                            <span class="vs-text">VS</span>
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 2">
-                                <p>Robot 2</p>
-                            </div>
-                        </div>
-                        <p class="mt-3"><strong>Fecha del combate:</strong> 12/10/2024</p>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-primary" href="/user/apostar_combate/1">Apostar</a>
-                        <div>
-                            <a class="btn btn-warning" href="/combate/editar/1">Editar</a>
-                            <a class="btn btn-danger" href="/combate/eliminar/1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Combate entre:</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 1">
-                                <p>Robot 1</p>
-                            </div>
-                            <span class="vs-text">VS</span>
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 2">
-                                <p>Robot 2</p>
-                            </div>
-                        </div>
-                        <p class="mt-3"><strong>Fecha del combate:</strong> 12/10/2024</p>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-primary" href="/user/apostar_combate/1">Apostar</a>
-                        <div>
-                            <a class="btn btn-warning" href="/combate/editar/1">Editar</a>
-                            <a class="btn btn-danger" href="/combate/eliminar/1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col">
-                <div class="card h-100">
-                    <div class="card-body">
-                        <h5 class="card-title">Combate entre:</h5>
-                        <div class="d-flex justify-content-around align-items-center">
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 1">
-                                <p>Robot 1</p>
-                            </div>
-                            <span class="vs-text">VS</span>
-                            <div>
-                                <img src="https://via.placeholder.com/100" alt="Robot 2">
-                                <p>Robot 2</p>
-                            </div>
-                        </div>
-                        <p class="mt-3"><strong>Fecha del combate:</strong> 12/10/2024</p>
-                    </div>
-                    <div class="card-footer d-flex justify-content-between">
-                        <a class="btn btn-primary" href="/user/apostar_combate/1">Apostar</a>
-                        <div>
-                            <a class="btn btn-warning" href="/combate/editar/1">Editar</a>
-                            <a class="btn btn-danger" href="/combate/eliminar/1" onclick="return confirm('¿Estás seguro?')">Eliminar</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <!-- Repite esta tarjeta para más combates -->
         </div>
     </div>
-</body>
-</html>
+</div>
+
+<!-- Modal para realizar la apuesta -->
+<div th:each="combate : ${combates}" th:id="'modalApuesta' + ${combate.id}" class="modal fade" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Realizar Apuesta</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form th:action="@{/user/realizar_apuesta}" method="post">
+                <div class="modal-body">
+                    <input type="hidden" name="combateId" th:value="${combate.id}">
+                    <div class="mb-3">
+                        <label for="robotApostado" class="form-label">Selecciona el robot</label>
+                        <select name="robotApostado" class="form-select" required>
+                            <option th:value="${combate.robot1.id}" th:text="${combate.robot1.nombre}"></option>
+                            <option th:value="${combate.robot2.id}" th:text="${combate.robot2.nombre}"></option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="monto" class="form-label">Monto de la apuesta</label>
+                        <input type="number" name="monto" class="form-control" placeholder="Ingresa el monto" required min="0.01" step="0.01">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Apostar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

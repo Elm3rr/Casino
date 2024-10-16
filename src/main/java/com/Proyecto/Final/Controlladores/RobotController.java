@@ -66,6 +66,7 @@ public class RobotController {
         }
         model.addAttribute("estado", estado);
         model.addAttribute("robots", robots);
+        
         return "robots"; 
     }
     

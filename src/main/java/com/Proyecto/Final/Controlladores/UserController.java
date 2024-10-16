@@ -17,10 +17,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.Proyecto.Final.DTO.ApuestaRequest;
 import com.Proyecto.Final.DTO.PersonaRequest;
 import com.Proyecto.Final.DTO.TransaccionRequest;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Transaccion;
+import com.Proyecto.Final.Service.ApuestaService;
 import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.PersonaService;
@@ -44,6 +46,9 @@ public class UserController {
     @Autowired
     private ImagenService imagenService;
 
+    @Autowired
+    private ApuestaService apuestaService;
+
     //Logica para eliminar
     @GetMapping("/eliminacion")
     public String eliminar_cuenta(Principal principal, RedirectAttributes redirectAttributes){
@@ -55,21 +60,6 @@ public class UserController {
             redirectAttributes.addFlashAttribute("error", "Error al eliminar la cuenta: " + ex.getMessage());
              return "redirect:/home";
         }
-    }
-
-
-    @GetMapping("/combates")
-    public String combates(Model model,
-    @RequestParam(value="estado", defaultValue="Programado") String estado,
-    @RequestParam(value="busqueda", required=false) String busqueda){
-        List<Combate> combates;
-        if(busqueda !=null && !busqueda.isEmpty()){
-            combates = combateService.Combate_buscado(estado, busqueda);
-        }else{
-            combates = combateService.Lista_Combates_Pendientes(estado);
-        }
-        model.addAttribute("combates", combates);
-        return "combates";
     }
 
     //Get para conseguir la vista del perfil, dando todos los atributos falses ya que así se activaran los readonly
@@ -178,7 +168,7 @@ public class UserController {
         return "r_transaccion";
     }
 
-    //Metodo de enrutamiento para ver las apuestas realizadas por el usuario
+    //Metodo de enrutamiento para ver las transacciones(recarga o retiro de saldo) realizadas por el usuario
     @GetMapping("/myTransactions")
     public String HistorialTransacciones(Model model,
     @RequestParam(value="tipo", defaultValue="Recarga") String tipo,
@@ -196,5 +186,47 @@ public class UserController {
         return "Transacciones";
     }
 
+    //Lista de combates para que los usuarios apuesten
+    @GetMapping("/combates")
+    public String combates(Model model,
+    @RequestParam(value="estado", defaultValue="Programado") String estado,
+    @RequestParam(value="busqueda", required=false) String busqueda){
+        List<Combate> combates = combateService.getCombatesfoUsers(estado, busqueda);
+        model.addAttribute("combates", combates);
+        return "combates";
+    }
+    
+
+    @PostMapping("/apostar")
+    public String realizarApuesta(
+        @Valid @ModelAttribute("apuestaRequest") ApuestaRequest apuestaRequest,
+        BindingResult bindingResult, 
+        Model model, Principal principal) {
+
+    if (bindingResult.hasErrors()) {
+        return "r_apuesta"; // Devuelve el formulario con errores
+    }
+
+    String resultado = apuestaService.realizarApuesta(apuestaRequest.getCombateId(),
+            apuestaRequest.getRobotApostadoId(), apuestaRequest.getMonto(), principal);
+
+    model.addAttribute("mensaje", resultado);
+    return "redirect:/user/combates";
+    }
+
+    @GetMapping("/hacerapuesta")
+    public String ludopatia(@RequestParam("id") Long combateId, Model model) {
+        // Supongamos que obtienes el objeto 'Combate' a partir del ID proporcionado.
+        Combate combate = combateService.findById(combateId);
+        
+        // Añadir el combate al modelo.
+        model.addAttribute("combate", combate);
+        
+        // Añadir el request del formulario.
+        model.addAttribute("apuestaRequest", new ApuestaRequest());
+        
+        return "r_apuesta";
+    }
+    
     
 }

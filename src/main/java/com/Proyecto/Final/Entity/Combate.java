@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.format.annotation.DateTimeFormat;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -60,14 +61,20 @@ public class Combate {
 
     @ManyToOne
     @JoinColumn(name = "eliminado_usuario_id")
-    private Persona CombateEliminadoPor;
+    private Persona combateEliminadoPor;
 
-    @OneToMany(mappedBy="combate")
+    @OneToMany(mappedBy="combate", cascade = CascadeType.ALL)
     private List<Apuesta> apuestas;
 
     @Override
     public String toString() {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm");
         return fechacombate != null ? fechacombate.format(formatter) : "Fecha no disponible";
+    }
+
+    public double calcularMontoTotalApostado() {
+        return apuestas.stream()
+                .mapToDouble(Apuesta::getMonto)
+                .sum();
     }
 }

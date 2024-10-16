@@ -1,8 +1,12 @@
 package com.Proyecto.Final.Controlladores;
 
 import java.security.Principal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -15,6 +19,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.Proyecto.Final.DTO.PersonaRequest;
+import com.Proyecto.Final.Entity.Combate;
+import com.Proyecto.Final.Service.CombateService;
 import com.Proyecto.Final.Service.ImagenService;
 import com.Proyecto.Final.Service.ModService;
 import com.Proyecto.Final.Service.PersonaService;
@@ -33,6 +39,9 @@ public class AdminController {
     
     @Autowired
     PersonaService personaService;
+
+    @Autowired
+    CombateService combateService;
 
     @Autowired
     TransactionService transactionService;
@@ -99,7 +108,6 @@ public class AdminController {
         return "register";
     }
 
-    //Logica para vetar usuarios
     @PostMapping("/declineTransaction")
     public String decline(@RequestParam Long id, @RequestParam("motivo") String motivo){
         try {
@@ -110,7 +118,6 @@ public class AdminController {
         }
         return "redirect:/data/transactions";
     }
-    //Logica para restaurar usuarios (solo admins)
     //Mover a admincontroller
     @PostMapping("/approveTransaction")
     public String aprove(@RequestParam Long id, 
@@ -129,5 +136,21 @@ public class AdminController {
         return "redirect:/data/transactions";
     }
 
+        //Lista de combates para que los usuarios apuesten
+    @GetMapping("/combates")
+    public String combates(Model model,
+    @RequestParam(value="estado", defaultValue="Programado") String estado,
+    @RequestParam(value="busqueda", required=false) String busqueda,
+    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaInicio,
+    @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate fechaFin){
+        
+        LocalDateTime inicio = (fechaInicio != null) ? fechaInicio.atStartOfDay() : null; 
+        LocalDateTime fin = (fechaFin != null) ? fechaFin.atTime(23, 59, 59) : null; 
 
+        List<Combate> combates = combateService.getCombatesForAdmin(estado, busqueda, inicio, fin);
+        System.out.println("Combates: " + combates);
+        model.addAttribute("combates", combates);
+        model.addAttribute("estado", estado);
+        return "combates";
+    }
 }

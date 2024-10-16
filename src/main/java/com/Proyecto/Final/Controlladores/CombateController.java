@@ -17,6 +17,7 @@ import com.Proyecto.Final.DTO.CombateRequest;
 import com.Proyecto.Final.Entity.Combate;
 import com.Proyecto.Final.Entity.Robot;
 import com.Proyecto.Final.Service.CombateService;
+import com.Proyecto.Final.Service.RobotService;
 
 import jakarta.validation.Valid;
 
@@ -26,6 +27,9 @@ public class CombateController {
 
     @Autowired
     private CombateService combateService;
+
+    @Autowired
+    private RobotService robotService;
 
     @GetMapping("/eliminar")
     public String deleteProduct(@RequestParam long id, Principal principal){
@@ -41,7 +45,7 @@ public class CombateController {
 
     @GetMapping("/crear")
     public String crear_robot(@RequestParam(value="id", required = false) Long id, Model model,
-    @RequestParam(value="estado", defaultValue="Desocupado") String estado){
+    @RequestParam(value="estado", defaultValue="Disponible") String estado){
         CombateRequest combateRequest;
         if(id != null){
             Combate combate = combateService.findById(id);
@@ -49,13 +53,13 @@ public class CombateController {
         }else{
             combateRequest = new CombateRequest();
         }
-        List<Robot> robots = combateService.robots_disponibles(estado);
+        List<Robot> robots = robotService.robots_list_habilitados(estado);
         List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
         model.addAttribute("robots", robots);
         model.addAttribute("estados", estados);
         model.addAttribute("combateRequest", combateRequest);
 
-        return "seleccion";
+        return "r_combate";
     }
 
     @PostMapping("/crear_editar")
@@ -65,30 +69,30 @@ public class CombateController {
         
         if(robotsSeleccionados.size() != 2){
             model.addAttribute("error", "Debes seleccionar exactamente dos robots");
-            List<Robot> robots = combateService.robots_disponibles(estado);
+            List<Robot> robots = robotService.robots_list_habilitados(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
-            return "seleccion";
+            return "r_combate";
         }
 
         if(result.hasErrors()){
-            List<Robot> robots = combateService.robots_disponibles(estado);
+            List<Robot> robots = robotService.robots_list_habilitados(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
-            return "seleccion";
+            return "r_combate";
         }
 
         try{
             combateService.saveCombate(robotsSeleccionados, combateRequest, principal);
         }catch(Exception e){
             model.addAttribute("error", "Ocurrió un error al guardar el combate");
-            List<Robot> robots = combateService.robots_disponibles(estado);
+            List<Robot> robots = robotService.robots_list_habilitados(estado);
             List<String> estados = List.of("Pendiente", "Finalizado", "Pospuesto", "Cancelado");
             model.addAttribute("robots", robots);
             model.addAttribute("estados", estados);
-            return "seleccion";
+            return "r_combate";
         }
         return "redirect:/user/combates";
     }
