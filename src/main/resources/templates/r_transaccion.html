@@ -20,7 +20,7 @@
                                 </div>
                             </div>
 
-                            <div class="row mb-3">
+                            <div class="row mb-3" th:if="${request.tipo == 'Recarga'}">
                                 <label class="col-sm-4 col-form-label">Número de la Boleta*</label>
                                 <div class="col-sm-8">
                                     <input class="form-control" th:field="*{numBoleta}">

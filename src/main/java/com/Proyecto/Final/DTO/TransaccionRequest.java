@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class TransaccionRequest {
 
-    @NotBlank(message = "El número de boleta no puede estar vacío")
     private String numBoleta;
 
     @NotNull(message = "El monto no puede ser nulo")

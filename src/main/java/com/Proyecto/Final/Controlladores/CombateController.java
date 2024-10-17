@@ -39,12 +39,12 @@ public class CombateController {
     public String deleteProduct(@RequestParam long id, Principal principal){
         try{
             combateService.ocultar_combate(id, principal);
-            return "redirect:/user/combates";
+            return "redirect:/admin/combates";
 
         }catch (Exception ex){
             System.out.println("Exception: " + ex.getMessage()); 
         }
-        return "redirect:/robots";
+        return "redirect:/combates";
     }
 
     @GetMapping("/crear")
@@ -108,11 +108,12 @@ public class CombateController {
         return "determinarGanador";
     }
 
-    @PostMapping("/combate/guardarGanador")
+    @PostMapping("/guardarGanador")
     public String guardarGanador(@RequestParam("combateId") Long combateId,
-                                  @RequestParam("ganador") Long ganadorId) {
+                                  @RequestParam("ganador") Long ganadorId,
+                                  Principal principal) {
         try {
-            apuestaService.guardarGanador(combateId, ganadorId);
+            apuestaService.guardarGanador(combateId, ganadorId, principal);
             return "redirect:/mod/combates";  // Redirigir a la lista de combates
         } catch (Exception e) {
             e.printStackTrace(); // Para depuración

@@ -8,6 +8,10 @@
         <main class="container"> 
             <h1 class="text-center my-4" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Administración de Usuarios</h1>
 
+            <div class="text-end mb-3" sec:authorize="hasRole('ADMIN')">
+                <a href="/admin/registerUsers" class="btn btn-primary">Crear Usuario</a>
+            </div>
+
             <form action="/data/usuarios" method="get" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
                 <div class="input-group mb-3">
                     <select name="rol" class="form-select" aria-label="Selecciona el Rol" sec:authorize="hasRole('ADMIN')">

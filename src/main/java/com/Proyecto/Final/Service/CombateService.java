@@ -50,7 +50,7 @@ public class CombateService{
 
     public List<Combate> getCombatesForModerators(Principal principal, String estado, String busqueda) {
 
-        Persona moderador = userRepository.findByUsername(principal.getName())
+        Persona moderador = personaRepository.findByUsername(principal.getName())
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
         if (busqueda != null && !busqueda.isEmpty()) {
@@ -110,6 +110,7 @@ public class CombateService{
         Persona usuario = personaRepository.findByUsername(principal.getName())
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
+
         // Obtener el combate que se va a cancelar
         Combate combate = combateRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Combate no encontrado"));
@@ -147,6 +148,35 @@ public class CombateService{
             apuestaRepository.save(apuesta);
         }
 
+        // Guardar el combate con su nuevo estado
+        combateRepository.save(combate);
+    }
+
+    public void ocultarCombateDespuesDePago(Long combateId, Principal principal) {
+        Persona usuario = personaRepository.findByUsername(principal.getName())
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+    
+        // Obtener el combate que se va a ocultar
+        Combate combate = combateRepository.findById(combateId)
+                .orElseThrow(() -> new IllegalArgumentException("Combate no encontrado"));
+    
+        // Cambiar el estado del combate a eliminado
+        combate.setEstado("Eliminado");
+        combate.setEliminadoVetado(true);
+        combate.setCombateEliminadoPor(usuario);
+    
+        // Cambiar el estado de los robots a disponible
+        Robot robot1 = combate.getRobot1();
+        Robot robot2 = combate.getRobot2();
+        if (robot1 != null) {
+            robot1.setEstado("Disponible");
+            robotRepository.save(robot1);
+        }
+        if (robot2 != null) {
+            robot2.setEstado("Disponible");
+            robotRepository.save(robot2);
+        }
+    
         // Guardar el combate con su nuevo estado
         combateRepository.save(combate);
     }

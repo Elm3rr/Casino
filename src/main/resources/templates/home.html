@@ -6,13 +6,78 @@
       <nav th:replace="~{layout :: page_navbar}"></nav>
         
       <main th:fragment="content">
-          <h1>BIENVENIDO UWU</h1>
-
-          <div th:if="${error}" class="alert alert-danger">
-            <p th:text="${error}"></p>
+        <div class="content-block container mt-5">
+            <div class="text-center">
+                <h1 class="display-4">BIENVENIDO UWU</h1>
+            </div>
+    
+            <!-- Mostrar mensaje de error si existe -->
+            <div th:if="${error}" class="alert alert-danger mt-4">
+                <p th:text="${error}"></p>
+            </div>
+    
+            <!-- Bloque para usuarios no autenticados -->
+            <div sec:authorize="isAnonymous()" class="card mt-4">
+                <div class="card-header bg-warning text-dark">
+                    <h2 class="h5">Autenticación Requerida</h2>
+                </div>
+                <div class="card-body">
+                    <p>Sigue estos pasos para autenticarse:</p>
+                    <ul>
+                        <li>Ir a la página de login</li>
+                        <li>Ingresar tus credenciales</li>
+                        <li>Presionar "Iniciar sesión"</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- Bloque para usuarios autenticados con rol USER -->
+            <div sec:authorize="hasAuthority('ROLE_USER')" class="card mt-4">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="h5">Pasos para hacer apuestas</h2>
+                </div>
+                <div class="card-body">
+                    <p>Como usuario, sigue estos pasos para realizar una apuesta:</p>
+                    <ul>
+                        <li>Selecciona el evento en el que deseas apostar</li>
+                        <li>Ingresa el monto de tu apuesta</li>
+                        <li>Confirma tu apuesta</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- Bloque para usuarios con rol MODERATOR -->
+            <div sec:authorize="hasAuthority('ROLE_MODERATOR')" class="card mt-4">
+                <div class="card-header bg-info text-white">
+                    <h2 class="h5">Pasos para moderar contenido</h2>
+                </div>
+                <div class="card-body">
+                    <p>Como moderador, puedes realizar las siguientes acciones:</p>
+                    <ul>
+                        <li>Revisar apuestas pendientes</li>
+                        <li>Verificar usuarios y actividades</li>
+                        <li>Generar reportes de actividad</li>
+                    </ul>
+                </div>
+            </div>
+    
+            <!-- Bloque para usuarios con rol ADMIN -->
+            <div sec:authorize="hasAuthority('ROLE_ADMIN')" class="card mt-4">
+                <div class="card-header bg-danger text-white">
+                    <h2 class="h5">Administración del Sistema</h2>
+                </div>
+                <div class="card-body">
+                    <p>Como administrador, tienes acceso a estas opciones:</p>
+                    <ul>
+                        <li>Gestionar usuarios y roles</li>
+                        <li>Configurar ajustes del sistema</li>
+                        <li>Revisar y eliminar contenido inapropiado</li>
+                    </ul>
+                </div>
+            </div>
         </div>
-        
-      </main>
+    </main>
+    
 
       <footer th:replace="~{layout :: page_footer}"></footer>
     </div>

@@ -24,7 +24,6 @@
                 <tr>
                   <th>Fecha de Apuesta</th>
                   <th>Monto</th>
-                  <th>Combate</th>
                   <th>Robot Apostado</th>
                   <th>Estado</th>
                 </tr>
@@ -32,9 +31,8 @@
               <tbody>
                 <!-- Filtra apuestas según el rol -->
                 <tr th:each="apuesta : ${apuestas}">
-                  <td th:text="${apuesta.fechaApuesta.toString().substring(0, 10)}"></td>
+                  <td th:text="${apuesta.fechaCreacion.toString().substring(0, 10)}"></td>
                   <td th:text="${apuesta.monto}"></td>
-                  <td th:text="${apuesta.combate.nombre}"></td>
                   <td th:text="${apuesta.robotApostado.nombre}"></td>
                   <td th:text="${apuesta.estado}"></td>
                 </tr>

@@ -67,7 +67,7 @@ public class AdminController {
 
     @PostMapping("/registerUsers")
     public String confirm(@Valid @ModelAttribute("user") PersonaRequest personaRequest, 
-    @RequestParam(value="ROL", defaultValue = "ROLE_USER") String Rol, 
+    @RequestParam(value="rol", defaultValue = "ROLE_USER") String Rol, 
     BindingResult result, Model model, Principal principal){
 
         if (!personaRequest.getPassword().equals(personaRequest.getConfirmPassword())) {

@@ -18,7 +18,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="close"></button>
                         </div>
                         
-                        <form th:action="${esEdicion ? '/user/edit' : (esAdmin ? '/admin/registerStaff' : '/register')}" th:object="${user}" method="post">
+                        <form th:action="${esEdicion ? '/user/edit' : (esAdmin ? '/admin/registerUsers' : '/register')}" th:object="${user}" method="post">
                             
                             <input type="hidden" th:field="${user.id}">
 

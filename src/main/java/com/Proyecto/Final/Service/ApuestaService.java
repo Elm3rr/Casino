@@ -108,11 +108,11 @@ public String realizarApuesta(Long combateId, Long robotId, Double monto, Princi
 
 
 
-    public void guardarGanador(Long combateId, Long ganadorId) {
+    public void guardarGanador(Long combateId, Long ganadorId, Principal principal) {
         try {
             // Guardar el ganador
             Combate combate = combateService.sizeCombate(combateId);
-            combate.setIdGanador(ganadorId); // Suponiendo que tienes un método para establecer el ganador
+            combate.setIdGanador(ganadorId);
             combateRepository.save(combate);
 
             // Calcular el monto total apostado
@@ -122,19 +122,31 @@ public String realizarApuesta(Long combateId, Long robotId, Double monto, Princi
             double porcentajeCasa = montoTotalApostado * 0.10;
             double montoAPagar = montoTotalApostado - porcentajeCasa;
 
-            // Obtener las apuestas realizadas en este combate
+            // Obtener el monto total apostado a los ganadores
             List<Apuesta> apuestas = apuestaRepository.findByCombateId(combateId);
+            double montoTotalApostadoAGanador = apuestas.stream()
+                .filter(apuesta -> apuesta.getRobotApostado().getId().equals(ganadorId))
+                .mapToDouble(Apuesta::getMonto)
+                .sum();
 
             // Pagar a los ganadores
             for (Apuesta apuesta : apuestas) {
                 if (apuesta.getRobotApostado().getId().equals(ganadorId)) {
                     // Calcular la ganancia para este usuario
-                    double ganancia = (apuesta.getMonto() / montoTotalApostado) * montoAPagar;
+                    double ganancia = (apuesta.getMonto() / montoTotalApostadoAGanador) * montoAPagar;
                     Usuario usuario = apuesta.getUsuario();
-                    usuario.setSaldo(usuario.getSaldo() + ganancia);
+                    // Agregar la apuesta original a la ganancia
+                    usuario.setSaldo(usuario.getSaldo() + apuesta.getMonto() + ganancia);
                     userRepository.save(usuario);
                 }
+                // Cambiar el estado de la apuesta a "Finalizada"
+                apuesta.setEstado("Finalizada");
+                apuestaRepository.save(apuesta);
             }
+
+            // Ocultar el combate después de pagar
+            combateService.ocultarCombateDespuesDePago(combateId, principal);
+
         } catch (Exception e) {
             e.printStackTrace(); // Para depuración
             throw new RuntimeException("Error al guardar el ganador: " + e.getMessage());
