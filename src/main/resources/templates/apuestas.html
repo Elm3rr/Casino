@@ -10,8 +10,31 @@
         <!-- Título dinámico según el rol -->
         <h1 class="text-center mb-4" sec:authorize="hasRole('USER')">Tus Apuestas</h1>
         <h1 class="text-center mb-4" sec:authorize="hasAnyRole('ADMIN', 'MOD')">Listado de Apuestas</h1>
-
         
+        <!-- Gestion de Busqueda por medio de Estados -->
+        <div class="card mb-4">
+          <div class="card-header">
+            <h3 class="card-title">Buscar Apuestas</h3>
+          </div>
+          <div class="card-body">
+            <form th:action="${#authorization.expression('hasRole(''ADMIN'')') ? '/admin/apuestas' : '/user/apuestas'}" 
+                  method="get">
+              <div class="row g-3">
+                <div class="col-md-2">
+                  <select name="estado" class="form-select" aria-label="Selecciona el Estado">
+                    <option value="Programada">Programada</option>
+                    <option value="Finalizada">Finalizada</option>
+                    <option value="Devuelta">Devuelta</option>
+                  </select>
+                </div>
+                <div class="col-md-1 d-grid">
+                  <button type="submit" class="btn btn-outline-secondary">Buscar</button>
+                </div>
+              </div>
+            </form>
+
+          </div>
+        </div>
         <!-- Tabla de apuestas -->
         <div class="card">
           <div class="card-header">

@@ -266,10 +266,8 @@ public class UserController {
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
             Model model) {
         
-        // Obtener apuestas del usuario
         List<Apuesta> apuestas = apuestaService.getApuestasUser(principal, estado, fechaInicio, fechaFin);
         
-        // Agregar las apuestas al modelo para mostrarlas en la vista
         model.addAttribute("apuestas", apuestas);
         
         return "apuestas"; // Nombre de la vista Thymeleaf (apuestas.html)
