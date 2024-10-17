@@ -66,9 +66,8 @@ public class AdminController {
     }
 
     @PostMapping("/registerUsers")
-    public String confirm(@Valid @ModelAttribute("user") PersonaRequest personaRequest, 
-    @RequestParam(value="rol", defaultValue = "ROLE_USER") String Rol, 
-    BindingResult result, Model model, Principal principal){
+    public String confirm(@Valid @ModelAttribute("user") PersonaRequest personaRequest, BindingResult result,
+    @RequestParam(value="rol", defaultValue = "ROLE_USER") String Rol, Model model, Principal principal){
 
         if (!personaRequest.getPassword().equals(personaRequest.getConfirmPassword())) {
             result.addError(
@@ -97,22 +96,24 @@ public class AdminController {
         if (result.hasErrors()) {
             model.addAttribute("user", personaRequest);
             model.addAttribute("editable", true);
-            model.addAttribute("SelectRole", true);
+            model.addAttribute("esAdmin", true);
+            model.addAttribute("esEdicion", false);
             return "register";
         }
 
         try{
             personaService.newUser(personaRequest, Rol, principal);
-            model.addAttribute("user", new PersonaRequest());
-            model.addAttribute("editable", true);
-            model.addAttribute("SelectRole", true);
+            return "redirect:/data/usuarios";
         } catch (Exception ex) {
-            result.addError(
-                new FieldError("user", "nombre", ex.getMessage())
-            );
+                result.addError(new FieldError("user", "nombre", ex.getMessage()));
+                model.addAttribute("user", personaRequest);
+                model.addAttribute("editable", true);
+                model.addAttribute("esAdmin", true);
+                model.addAttribute("esEdicion", false);
+                return "register";
         }    
-        return "register";
     }
+
 
     @PostMapping("/declineTransaction")
     public String decline(@RequestParam Long id, @RequestParam("motivo") String motivo){
