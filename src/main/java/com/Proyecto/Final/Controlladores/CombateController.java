@@ -39,12 +39,12 @@ public class CombateController {
     public String deleteProduct(@RequestParam long id, Principal principal){
         try{
             combateService.ocultar_combate(id, principal);
-            return "redirect:/admin/combates";
+            return "redirect:/";
 
         }catch (Exception ex){
             System.out.println("Exception: " + ex.getMessage()); 
         }
-        return "redirect:/combates";
+        return "redirect:/";
     }
 
     @GetMapping("/crear")
