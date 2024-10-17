@@ -160,8 +160,9 @@ public class CombateService{
         Combate combate = combateRepository.findById(combateId)
                 .orElseThrow(() -> new IllegalArgumentException("Combate no encontrado"));
     
+
         // Cambiar el estado del combate a eliminado
-        combate.setEstado("Eliminado");
+        combate.setEstado("Terminado");
         combate.setEliminadoVetado(true);
         combate.setCombateEliminadoPor(usuario);
     
