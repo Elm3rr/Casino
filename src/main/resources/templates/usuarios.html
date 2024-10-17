@@ -54,9 +54,9 @@
                         <td th:text="${usuario.fechaCreacion.toString().substring(0,10)}"></td>
                         <td th:text="${usuario.fechaActualizacion.toString().substring(0,10)}"></td>
                         <td th:if="${estado == 'Eliminado' or estado == 'Vetado'}">
-                            <span th:text="${estado == 'Eliminado' ? usuario.motivoEliminacion : usuario.motivoVeto}"></span>
+                            <span th:text="${estado == 'Eliminado' ? usuario.motivoEliminacion : usuario.motivoEliminacion}"></span>
                         </td>
-                        <td th:if="${estado == 'Vetado'}" th:text="${usuario.vetadoPorModerador.nombre}"></td>
+                        <td th:if="${estado == 'Vetado'}" th:text="${usuario.vetadoPor.nombre}"></td>
                         <td style="white-space:nowrap" sec:authorize="hasRole('ADMIN') or hasRole('MOD')">
                             <div th:if="${estado =='Habilitado'}">
                                 <button type="button" class="btn btn-danger btn-sm" 

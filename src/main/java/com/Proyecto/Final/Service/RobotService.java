@@ -10,19 +10,14 @@ import org.springframework.stereotype.Service;
 import com.Proyecto.Final.DTO.RobotRequest;
 import com.Proyecto.Final.Entity.Persona;
 import com.Proyecto.Final.Entity.Robot;
-import com.Proyecto.Final.Entity.Usuario;
 import com.Proyecto.Final.Repository.PersonaRepository;
 import com.Proyecto.Final.Repository.RobotRepository;
-import com.Proyecto.Final.Repository.UserRepository;
 
 @Service
 public class RobotService {
 
     @Autowired
     private RobotRepository robotRepository;
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private PersonaRepository personaRepository;
@@ -46,14 +41,14 @@ public class RobotService {
 
     //Ocultar y restaurar robots
     public void ocultar_robot(long id, String motivo, Principal principal){
-        Usuario usuario = userRepository.findByUsername(principal.getName())            
+        Persona persona = personaRepository.findByUsername(principal.getName())            
         .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
         
         Robot robot = findRobot(id);
         robot.setEliminadoDescalificado(true);
         robot.setEstado("Eliminado");
         robot.setMotivoeliminacion(motivo);
-        robot.setRobotEliminadoPor(usuario);
+        robot.setRobotEliminadoPor(persona);
         robotRepository.save(robot);
     }
 

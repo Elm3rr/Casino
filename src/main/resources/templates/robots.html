@@ -56,7 +56,7 @@
                         <!-- Botón Editar -->
                         <div th:if="${estado !='Eliminado'}">
                             <a class="btn btn-primary btn-sm" 
-                            th:href="@{/robot/editar(id=${robot.id})}">Editar</a>
+                            th:href="@{/robot/guardar(id=${robot.id})}">Editar</a>
                             
                             <!-- Botón Eliminar que abre el modal -->
                             <button type="button" class="btn btn-danger btn-sm" 

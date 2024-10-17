@@ -162,7 +162,7 @@ public class AdminController {
 
 
 
-    @GetMapping("/admin/apuestas")
+    @GetMapping("/apuestas")
     public String mostrarApuestasAdmin(
             @RequestParam(name = "estado", required = false, defaultValue = "Pendiente") String estado,
             @RequestParam(name = "username", required = false) String username,

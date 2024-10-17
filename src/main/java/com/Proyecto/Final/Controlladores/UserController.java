@@ -68,6 +68,7 @@ public class UserController {
         }
     }
 
+    
     //Get para conseguir la vista del perfil, dando todos los atributos falses ya que así se activaran los readonly
     @GetMapping("/perfil")
     public String show(Model model, Principal principal){

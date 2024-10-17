@@ -64,32 +64,49 @@ public class ApuestaService {
 
 /*    public Apuesta saveApuesta(ApuestaRequest apuestaRequest)
  */
-    public String realizarApuesta(Long combateId, Long robotId, Double monto, Principal principal){
-        try{
-            Combate combate = combateService.sizeCombate(combateId);
-            if (combate == null || !"Programado".equalsIgnoreCase(combate.getEstado())) {
-                return "No se puede realizar la apuesta, el combate no está pendiente.";
-            }
-            Usuario usuario = userRepository.findByUsername(principal.getName()).get();
-        
-            if(usuario.getSaldo()<=monto){
-                return "No tienes suficiente saldo para realizar esta apuesta.";
-            }
-
-            Apuesta apuesta = new Apuesta();
-            apuesta.setRobotApostado(robotRepository.findById(robotId).get());
-            apuesta.setCombate(combate);
-            apuesta.setMonto(monto);
-            apuesta.setUsuario(usuario);
-
-            usuario.setSaldo(usuario.getSaldo()-monto);
-            userRepository.save(usuario);
-            return "Apuesta realizada con éxito";
-        }catch (Exception e) {
-            e.printStackTrace(); // Para depuración
-            return "Ocurrió un error al realizar la apuesta: " + e.getMessage();
+public String realizarApuesta(Long combateId, Long robotId, Double monto, Principal principal) {
+    try {
+        // Verificar que el combate existe y está "Programado"
+        Combate combate = combateService.sizeCombate(combateId);
+        if (combate == null || !"Programado".equalsIgnoreCase(combate.getEstado())) {
+            return "No se puede realizar la apuesta, el combate no está pendiente.";
         }
+
+        // Obtener el usuario que realiza la apuesta
+        Usuario usuario = userRepository.findByUsername(principal.getName()).orElseThrow(
+            () -> new IllegalArgumentException("Usuario no encontrado")
+        );
+
+        // Verificar que el usuario tenga saldo suficiente
+        if (usuario.getSaldo() < monto) {
+            return "No tienes suficiente saldo para realizar esta apuesta.";
+        }
+
+        // Crear y configurar la apuesta
+        Apuesta apuesta = new Apuesta();
+        apuesta.setRobotApostado(robotRepository.findById(robotId).orElseThrow(
+            () -> new IllegalArgumentException("Robot no encontrado")
+        ));
+        apuesta.setCombate(combate);
+        apuesta.setMonto(monto);
+        apuesta.setUsuario(usuario);
+        apuesta.setEstado("Pendiente");
+
+        // Reducir el saldo del usuario y guardar los cambios
+        usuario.setSaldo(usuario.getSaldo() - monto);
+        userRepository.save(usuario);
+
+        // Guardar la apuesta en el repositorio
+        apuestaRepository.save(apuesta);  // <--- Guardar la apuesta
+
+        return "Apuesta realizada con éxito";
+    } catch (Exception e) {
+        e.printStackTrace(); // Para depuración
+        return "Ocurrió un error al realizar la apuesta: " + e.getMessage();
     }
+}
+
+
 
     public void guardarGanador(Long combateId, Long ganadorId) {
         try {

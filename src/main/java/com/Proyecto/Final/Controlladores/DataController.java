@@ -37,11 +37,11 @@ public class DataController {
         } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
-        return "redirect:/usuarios";
+        return "redirect:/data/usuarios";
     }
     //Logica para restaurar usuarios (solo admins)
     //Mover a admincontroller
-    @GetMapping("/restaurar_usuario")
+    @PostMapping("/restaurar_usuario")
     public String restaurar(@RequestParam Long id){
         try {
             personaService.restaurar_usuario(id);
@@ -49,7 +49,7 @@ public class DataController {
         } catch (Exception ex) {
             System.out.println("Exception: " + ex.getMessage());
         }
-        return "redirect:/usuarios";
+        return "redirect:/data/usuarios";
     }
 
     //Logica para la busqueda de usuarios tanto(USER como MODERADORES)

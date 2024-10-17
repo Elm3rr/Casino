@@ -92,33 +92,45 @@ public class RobotController {
 
     @PostMapping("/guardar")
     public String save(@RequestParam(required = false) Long id,
-    @Valid  @ModelAttribute("request") RobotRequest robotRequest,
-    BindingResult result, Model model, Principal principal){
-        if(result.hasErrors()){
-            model.addAttribute("robot", (id!=null) ? robotService.findRobot(id): new Robot());
+                       @Valid @ModelAttribute("request") RobotRequest robotRequest,
+                       BindingResult result, Model model, Principal principal) {
+        if (result.hasErrors()) {
+            model.addAttribute("robot", (id != null) ? robotService.findRobot(id) : new Robot());
             return "r_robot";
-        }try{
+        }
+        try {
             String nombreImagen = null;
-
-            if(id!=null){
+    
+            if (id != null) {
                 Robot robot = robotService.findRobot(id);
-
-                if(!robotRequest.getImage().isEmpty() && robot.getImage()!=null){
-                    imagenService.deleteImage(robot.getImage());
+    
+                // Si no se ha subido una nueva imagen, mantener la imagen actual
+                if (!robotRequest.getImage().isEmpty()) {
+                    // Si se sube una nueva imagen y hay una existente, eliminar la anterior
+                    if (robot.getImage() != null) {
+                        imagenService.deleteImage(robot.getImage());
+                    }
+                    // Crear la nueva imagen
+                    nombreImagen = imagenService.buildImage(robotRequest.getImage());
+                } else {
+                    // Mantener la imagen actual si no se sube una nueva
+                    nombreImagen = robot.getImage();
+                }
+            } else {
+                // Crear la imagen si es un nuevo robot
+                if (!robotRequest.getImage().isEmpty()) {
+                    nombreImagen = imagenService.buildImage(robotRequest.getImage());
                 }
             }
-
-            if(!robotRequest.getImage().isEmpty()){
-                nombreImagen = imagenService.buildImage(robotRequest.getImage());
-            }
-
+    
+            // Guardar el robot con la imagen (nueva o existente)
             robotService.saveRobot(robotRequest, nombreImagen, principal);
-
-        }catch(IOException ex){
+    
+        } catch (IOException ex) {
             System.out.println("Error: " + ex.getMessage());
             return "r_robot";
         }
-
+    
         return "redirect:/robots";
     }
     

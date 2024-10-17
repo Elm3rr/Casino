@@ -62,11 +62,8 @@
                 <a class="nav-link text-dark" href="/mod/combates">Combates (Mod)</a>
             </li>
             <li class="nav-item" sec:authorize="hasRole('USER')">
-                <a class="nav-link text-dark" href="/user/combates">Combates (User)</a>
+                <a class="nav-link text-dark" href="/user/combates">Combates</a>
             </li>
-              <li class="nav-item" sec:authorize="isAuthenticated()">
-                <a class="nav-link text-dark" href="/user/apuestas">Apuestas</a>
-              </li>
               <li class="nav-item" sec:authorize="hasAnyRole('MOD', 'ADMIN')">
                 <a class="nav-link text-dark" href="/data/usuarios">Usuarios</a>
               </li>
@@ -79,7 +76,7 @@
               <li class="nav-item" sec:authorize="hasRole('USER')">
                 <a class="nav-link text-dark" href="/user/apuestas">Mis Apuestas</a>
             </li>
-            <li class="nav-item" sec:authorize="hasAnyRole('ADMIN', 'MOD')">
+            <li class="nav-item" sec:authorize="hasRole('ADMIN')">
                 <a class="nav-link text-dark" href="/admin/apuestas">Apuestas (Admin)</a>
             </li>
             
